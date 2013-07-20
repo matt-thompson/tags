@@ -26,7 +26,7 @@
   
   });
     
-  // Define a custom tag for the new ToggleAll input field
+  // Define a custom tag for the ToggleAll input field
   Tags.define({
     tag:'toggleAllInput',
     htmlTag:'input',
@@ -68,7 +68,7 @@
     
   });
 
-  // Define a Custom Tag for the Todo records.
+  // Define a Custom Tag for a Todo record.
   Tags.define({
     tag:'todo',
     htmlTag:'div',
@@ -96,32 +96,32 @@
         {tag:'div', class:'view', content: {
           checkbox: {tag:'input', class:'toggle', type:'checkbox', checked:(this.completed ? "checked" : null), on: {
             click: function() {
-              log.debug("checkbox.CLICK");
+//              log.debug("checkbox.CLICK");
               self.setCompleted(!self.completed);
             }
           }},
           label: {tag:'label', content:this.title, on: {
             dblclick: function() {
-              log.debug("label.DBL-CLICK");
+//              log.debug("label.DBL-CLICK");
               self.el.addClass('editing').find('.edit').focus();
             }
           }},
           destroyButton: {tag:'button', class:'destroy', on: {
             click: function() {
-              log.debug("destroyButton.CLICK");
+//              log.debug("destroyButton.CLICK");
               app.removeTodo(self);
             }
           }}
         }},
         {tag:'input', class:'edit', value:this.title, on: {
           keypress: function(e) {
-            log.debug("input.KEYPRESS="+e.which);
+//            log.debug("input.KEYPRESS="+e.which);
             if (e.which === app.ENTER_KEY) {
               e.target.blur();
             }
           },
           blur: function() {
-            log.debug("input.BLUR val="+$(this).val());
+//            log.debug("input.BLUR val="+$(this).val());
             self.title = $(this).val();
             self.el.removeClass('editing');
             self.content[0].content.label.el.html(self.title);
@@ -129,9 +129,7 @@
           }
         }}
       ]);
-      var text = this.renderAs('li');
-      log.debug("todo.renderText TEXT="+text);
-      return text;
+      return this.renderAs('li');
     },
     
     // Create the serialized form of this Todo item for storage.
@@ -221,9 +219,7 @@
           n += 1;
         }
       }
-      if (this.todoList.length === 0) {
-        $("#main").css('display','none');
-      }
+      if (this.todoList.length === 0) $("#main").css('display','none');
     },
     
     // Add a Todo entry.
