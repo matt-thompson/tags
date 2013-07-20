@@ -259,6 +259,7 @@
     },
     
     addClass: function() {
+      var n;
       log.debug("addClass args.len="+arguments.length);
       var originalClass = this.class;
       var classes = {};
@@ -282,6 +283,7 @@
     },
      
     removeClass: function() {
+      var n;
       log.debug("removeClass args.len="+arguments.length);
       var originalClass = this.class;
       var classes = {};

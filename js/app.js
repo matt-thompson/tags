@@ -237,7 +237,7 @@
 
     // Load the initial state from localStorage
     init: function() {
-      var todoItems = Utils.store("todos-mytodo");
+      var todoItems = app.store("todos-mytodo");
       var first = true;
       this.todoListEl = $("#todo-list");
       for (var n=0; n<todoItems.length; n++) {
