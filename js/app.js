@@ -7,12 +7,7 @@
   'use strict';
 
   // Define a custom tag for the new Todo input field
-  Tags.define({
-    tag:'newTodoInput',
-    htmlTag:'input',
-    extend:'view',
-    
-    activate: function() {
+  Tags.define({tag:'newTodoInput', htmlTag:'input', extend:'view', activate: function() {
       this._super();
       var self = this;
       self.el.on('keyup',function(e) {
@@ -23,16 +18,10 @@
         self.el.val("");
       });
     }
-  
   });
     
   // Define a custom tag for the ToggleAll input field
-  Tags.define({
-    tag:'toggleAllInput',
-    htmlTag:'input',
-    extend:'view',
-        
-    activate: function() {
+  Tags.define({tag:'toggleAllInput', htmlTag:'input', extend:'view', activate: function() {
       this._super();
       var self = this;
       self.el.on('change',function() {
@@ -42,11 +31,8 @@
   });
 
   // Define a custom tag for the Footer      
-  Tags.define({
-    tag:'todoFooter',
-    htmlTag:'footer',
-    extend:'view',
-    
+  Tags.define({tag:'todoFooter', htmlTag:'footer', extend:'view', 
+  
     activate: function() {
       this._super();
       app.todoFooter = this;
@@ -69,10 +55,7 @@
   });
 
   // Define a Custom Tag for a Todo record.
-  Tags.define({
-    tag:'todo',
-    htmlTag:'div',
-    extend:'view',
+  Tags.define({tag:'todo', htmlTag:'div', extend:'view',
 
     // Set the completed state of this Todo.          
     setCompleted: function(checked) {

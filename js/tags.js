@@ -147,8 +147,42 @@
         Tags.workTime += new Date().getTime() - startTime;
         return tag;
       }
-    } // Tags.create()
+    }, // Tags.create()
     
+    // The remaining methods are general purpose utilities
+    
+    asArray: function(x) {
+      var xx = x != false ? (x || []) : x;
+      return typeof xx == 'object' ? xx : [xx];
+    },
+    
+    localStore: {
+      create: function(item,callback) {
+        if (!item.id) item.id = Tags.getUUID();
+        localStorage.setItem(item.tag+"-"+item.id, JSON.stringify(item.serialize()));
+      },
+      
+      read: function(tag, id, callback) {
+        var text = localStorage.getItem(tag+"-"+id);
+        callback(Tags.create(JSON.parse(text)));
+      },
+      
+      update: function(item,callback) {
+        storeLocal.create(item,callback);
+      },
+      
+      delete: function(item,callback) {
+        storeLocal.removeItem(item.tag+"-"+item.id);
+      }
+    },
+    
+    restStore: {
+      create: function(item,callback) {
+        
+      }
+    
+        
+      
   }; //Tags
   
   window.Tags = Tags;
@@ -204,12 +238,9 @@
     },
     
     renderBody: function(context) {
-      if (this.content) {
-        var content = this.content;
-        if (typeof content != 'object') content = [content];
-        for (var n in content) {
-          this.addContentItem(context,content[n]);
-        }
+      var content = Tags.asArray(this.content);
+      for (var n in content) {
+        this.addContentItem(context,content[n]);
       }
     },
     
