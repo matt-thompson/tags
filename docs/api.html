@@ -1,0 +1,91 @@
+<!doctype html>
+<html lang="en" data-framework="jquery">
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+  <title>jQuery � TodoMVC</title>
+  <link rel="stylesheet" href="bower_components/todomvc-common/base.css">
+  <link rel="stylesheet" href="css/app.css">
+  <style>
+div.signature {background-color:#dfd; font-size:12px; padding:3px 0 3px 5px;}
+div.arg {position: relative; height:20px;padding-left:10px;}
+div.arg div.name {position:absolute; font-weight:bold;}
+div.arg div.description {position:absolute; left:80px;}
+div.method p {margin-left:10px;}
+  </style>
+</head>
+<body>
+  <script type="text/custom-tags">
+    <h1>Tags Framework Application Programming Interface</h1>
+    <p>
+      This describes the Application Programming Interface for the Tags Framework. 
+      It consists of a few static methods accessed from the "Tags" namespace. For 
+      conceptual information see the 
+      <a title="Tags Framework" href="http://randomsoftwareideas.com/tags-framework/" target="_blank">Introduction</a>.
+    </p>
+    <h2>Namespace - Tags</h2>
+    <p>
+     The Tags namespace is used to define and manage objects and object classes.
+    </p>
+    <h2>Methods</h2>
+    <method name='define'>
+      <arg name='spec' type='object'
+        description='Object used to extend the prototype of another Class.' />
+      <description>
+        The define() method is used to define an object class. The 'spec' object specifies 
+        additional prototype variables and methods to be used to extend another 
+        object class. The 'tag' attribute of the 'spec' object is the name of
+        the object class being defined and the 'extend' attribute is the name of
+        the object class being extended. After being defined, the object class can
+        be instantiated using the create() method.
+      </description>
+    </method>
+    <method name='create'>
+      <arg name='init' type='object/XML-Node/string/number/boolean'
+           description='Object used to initialize the object being instantiated.'/>
+      <p>If 'init' is an Object, the create() method is used to instantiate a Tag object
+         and the 'init' Object specifies attribute values and methods that are to be copied 
+         to the instantiated object. The create() method verifies that the value of the 'init'
+         parameter is not
+         already a Tag object and if it is, it will return the value of the 'init'
+         parameter itself. An object is considered to be a Tag object if it has
+         a 'tag' attribute and it has an attribute called '_isTag' which is true.</p>
+        
+      <p>If 'init' is an XML Node object, the create() method is used to instantiate a Tag
+         object and the XML attributes will be used to initialize attributes of the 
+         created Object.</p>
+         
+     <p>If 'init' is a String and it starts with '&lt;', then it is parsed as XML and used
+        to instantiate a Tag object as if an XML Node object had been specified.</p>
+        
+     <p>If 'init' is a boolean or number or if it is a String that does not start
+        with '&lt;', then the create() method returns the value of the 'init' attribute.</p>
+        
+     <h4>XML Specified Nested Content:</h4>
+     <p>In the case of XML, the nested
+        content is processed by recursive calls to the create() method and stored
+        in the 'content' attribute of the Tag object being instantiated.</p>
+        
+     <h4>Object Specified Nested Content:</h4>
+     <p>In the case of the 'init' attribute being an Object, its 'content' attribute is
+        treated as the nested content. If it is an array or object, each value
+        of the array or object will be converted to a Tag object by recursive call
+        to the create() method. If the 'content' attribute is not an array or object,
+        it is itself passed to the create() method.</p>
+        
+    </method>
+  </script>
+  <script src="../bower_components/jquery/jquery.js"></script>
+  <script src="../bower_components/log4javascript/log4javascript.js"></script>
+  <script>
+    var log = log4javascript.getDefaultLogger();
+    log.debug("DEBUG - Enabled");
+    log.debug("INFO - Enabled");
+  </script>
+  <script src="../js/Class.js"></script>
+  <script src="../js/tags.js"></script>
+  <script src="doctags.js"></script>
+</body>
+</html>
+
+ 
