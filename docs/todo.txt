@@ -1,0 +1,12 @@
+
+1. Finalize program
+
+  1a. Add Filter
+  1b. Consider putting todo into HTML
+  1c. Conform to Mvctodo standards
+  
+2. Finish Intro doc
+
+3. Finish API doc
+
+4. Put Blog into shape

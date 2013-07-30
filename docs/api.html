@@ -2,16 +2,13 @@
 <html lang="en" data-framework="jquery">
 <head>
   <meta charset="utf-8">
-  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
-  <title>jQuery � TodoMVC</title>
-  <link rel="stylesheet" href="bower_components/todomvc-common/base.css">
-  <link rel="stylesheet" href="css/app.css">
   <style>
 div.signature {background-color:#dfd; font-size:12px; padding:3px 0 3px 5px;}
 div.arg {position: relative; height:20px;padding-left:10px;}
 div.arg div.name {position:absolute; font-weight:bold;}
 div.arg div.description {position:absolute; left:80px;}
 div.method p {margin-left:10px;}
+h4 {margin-left:10px;}
   </style>
 </head>
 <body>
@@ -27,8 +24,12 @@ div.method p {margin-left:10px;}
     <p>
      The Tags namespace is used to define and manage objects and object classes.
     </p>
-    <h2>Methods</h2>
-    <method name='define'>
+    <header>Classes</header>
+    <p><a href='#view-class'>View</a> - There is only one built-in class, the View class</p>
+    
+    <h3>Methods</h3>
+
+    <method name='Tags.define' kind='static'>
       <arg name='spec' type='object'
         description='Object used to extend the prototype of another Class.' />
       <description>
@@ -40,9 +41,14 @@ div.method p {margin-left:10px;}
         be instantiated using the create() method.
       </description>
     </method>
-    <method name='create'>
+    <method name='Tags.create'>
       <arg name='init' type='object/XML-Node/string/number/boolean'
            description='Object used to initialize the object being instantiated.'/>
+      <p>The create() method works the way you would intuitively expect. When the 
+         'init' can be interpreted as a nested Tag object then it will be used to
+         initialize a nested object, but if it is a number, boolean or string that
+         does not look like XML text, then it will be treated as text content.</p>
+         
       <p>If 'init' is an Object, the create() method is used to instantiate a Tag object
          and the 'init' Object specifies attribute values and methods that are to be copied 
          to the instantiated object. The create() method verifies that the value of the 'init'
@@ -74,6 +80,112 @@ div.method p {margin-left:10px;}
         it is itself passed to the create() method.</p>
         
     </method>
+    <method name='Tags.isTag'>
+      <arg name='item' type='any' description='Value to check for being a Tag object'/>
+      <p>This is a convenience method for testing if a value is a Tag object. A Tag
+         object is defined as an object which has a 'tag' attribute and has an attribute
+         called '_isTag' which evaluates to true. The Tags Framework sets the '_isTag'
+         attribute to true in the create() method.</p>
+    </method>
+    <method name='Tags.asArray'>
+      <arg name='item' type='any' description='Value to convert to an array or object'/>
+      <p>This is a convenience method for insuring that we have something we can 
+         iterate over. A scalor value (boolean, integer or string) will be converted
+         to an array containing the scalor value. Null or undefined will be converted
+         to an empty array. An array or plain object will be returned as itself.</p>
+    </method>
+    
+    <h2>Class View</h2>
+    <p>The View class is a built-in class that implements mainly the render() and
+       activate() methods. Its main purpose is to allow HTML tags and custom tags
+       to be instantiated through XML or Javascript structures and then rendered
+       into HTML. When the Tags.create() method is invoked on a 'config' argument
+       with a 'tag' attribute that has not been registered, the class used to
+       instantiate the object will default to the View class. This allows all
+       HTML tag names to be used to instantiate View objects. This, in turn 
+       allows us to read arbitrary HTML (as long as it conforms to XML syntax)
+       and then render it back as the original HTML. This, finally, lets standard
+       HTML to be nested in custom tags and custom tags to be nested in standard
+       HTML.</p>
+    <method name='view.render'>
+      <p>This method is invoked to render the object along with any nested
+         content, as HTML and returns it as a jQuery DOM element. This method calls 
+         view.renderText() to convert the View object to text. If one wants to
+         override the default rendering to implement a custom tag, it is usuall
+         best to override the view.renderText() method rather than the view.render()
+         method.</p>
+    </method>
+    <method name='view.activate'>
+      <p>This method is invoked to attach event handlers and do any additional
+         processing which would normally need to be done to an element after
+         it is inserted into the DOM. The normal sequence of events is
+         to render a View, attach it to the DOM and then activate it. Code
+         to do that could look something like this ...</p>
+      <pre class='code-box'>
+         var view = Tags.create({tag:'div', content='HELLO WORLD'});
+         $('body').append(view.render());
+         view.activate();
+      </pre>
+      <p>The create, render, append and activate sequence is done automatically
+         by the Tags Framework for any tags contained in a '&lt;' tag with type of
+         'text/custom-tags'. This allows one to treat such tags like standard
+         static HTML except that it can contain custom tags.</p>
+    </method>
+    <method name='view.renderText'>
+      <p>This is the method used by the view.render() method to generate 
+         HTML text. Override this method for custom rendering.
+         This method actually uses the view.renderAs() method. It will
+         pass the value of the 'htmlTag' attribute to the view.renderAs()
+         method. Thus, you can cause a custom tag to be rendered like any
+         standard HTML tag by simply setting the 'htmlTag' attribute.
+         If the 'htmlTag' attribute is null, then the 'tag' attribute
+         will be used.</p>
+    </method>
+    <method name='view.renderAs'>
+      <arg name='tag' type='string' description='the HTML tag to be rendered'/>
+      <p>This is the routine used by the default view.renderText() method
+         to generate HTML text. Use this to render a custom tag by invoking
+         it with the name of the HTML tag you want to be used for the outer
+         tag of the custom tag. This would normally be coded in the overridden
+         view.renderText() method and would be called after generating or
+         modifying the 'content' attribute.</p>
+    </method>
+    <method name='view.addContent'>
+      <arg name='addedContent' type='boolean/number/string/array/object'
+           description='the content to be added to the View object'/>
+      <p>This is used to extend the 'content' attribute of the View
+         object. It is normally used inside of an overridden view.renderText()
+         method.</p>
+      <p>If the 'addedContent' attribute is a plain object, then the 
+         'content' attribute should be either a plain object or it should
+         be null. If null, it will be intialized to an empty object. Each
+         item from the 'addedContent' attribute will be added to the
+         'content' attribute.</p>
+      <p>If the 'addedContent' is not a plain object, then the 'content'
+         attribute is expected to be an array or else if null or a scalar
+         value, then it will be converted to an array.  Then the 'addedContent'
+         will be pushed onto the array or if the 'addedContent' attribute is
+         itself an array, then each of its values will be pushed onto the
+         'content' array.</p>
+    </method>
+    <method name='view.addClass'>
+      <arg name='classes' type='string' description='a class name or list of class names separated by spaces'/>
+      <p>The name or names contained in the 'classes' parameter will be 
+         added to the 'class' attribute of the View object.</p>
+    </method>
+    <method name='view.removeClass'>
+      <arg name='classes' type='string' description='a class name or list of class names separated by spaces'/>
+      <p>The name or names contained in the 'classes' parameter will be 
+         indicate values to be removed from the 'class' attribute of the View object.</p>
+    </method>
+    <method name='view.walk'>
+      <arg name='callback' type='function' description='a function to be invoked for each nested View object'/>
+      <p>This is used to walk the nested structure of a View object. For every nested 
+         View object found the 'callback' function will be called with a single 
+         parameter which is the current nested View object. This can be used to
+         analyze or operate on the nested content of a View object.</p>
+    </method>
+    
   </script>
   <script src="../bower_components/jquery/jquery.js"></script>
   <script src="../bower_components/log4javascript/log4javascript.js"></script>

@@ -38,15 +38,29 @@
     extend:'view',
     
     renderText:function() {
-      var signature = this.name + "(";
+      var signature = "";
+      if (this.kind) signature += "<span class='faded'>&lt;"+this.kind+"&gt>;</span>";
+      var signature += this.name + "(";
       var content = Utils.asArray(this.content);
+      var paramsTable = {tag:'table', class='params', content:[
+                          {tag:'tr', content:[
+                            {tag:'th',content:'Name'},
+                            {tag:'th',content:'Type'},
+                            {tag:'th',content:'Description'}
+                          ]}
+                        };
+                        
       var first = true;
       for (var n in content) {
         var item = content[n];
         if (Tags.isTag(item,"arg")) {
+          paramsTable.addContent({tag:'tr',content:[
+                                   {tag:'td',content:item.name},
+                                   {tag:'td',content:item.type},
+                                   {tag:'td',content:item.description}
+                                 ]});
           if (first) first = false; else signature += ', ';
           signature += item.name;
-          if (item.type) signature += ':'+item.type;
         }
       }
       signature += ")";
