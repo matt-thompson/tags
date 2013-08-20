@@ -1,5 +1,21 @@
-  'use strict';
 
+/** Implement the core functionality of the Tags Framework.
+  'use strict';
+ *
+ * <p>Implement the Tags namespace and the View class which provides
+ *    the ability to implement custom tags in Javascript. This, in turn
+ *    provides the ability to cleanly link code to HTML and thus provides
+ *    the basis for a implementing Web applications that are composed
+ *    of HTML, CSS and Javascript.</p>
+ *
+ * <ul>
+ *  <li><a href='Tags.html'>Tags</a> - The root level namespace</li>
+ *  <li><a href='View.html'>View</a> - The base class for all View classes</li>
+ * </ul>
+ *
+ * @module core
+ */
+   
 /** 
  * The root namespace for the Tags Framework.
  * @namespace
@@ -8,10 +24,15 @@
   
     defaultClass: null,
     classMap: {'CLASS':Class},
-    sequentialNumber: 1,
+    sequentialNumber: 0,
     parseTime: 0,
     workTime: 0,
     
+  nextInSequence: function() {
+    this.sequentialNumber++;
+    return this.sequentialNumber;
+  },
+  
 /**
  * Define a new Class and register it.
  *
@@ -231,21 +252,34 @@ window.Tags = Tags;
   
 /** A built-in Class for representing HTML with custom tags.
  *
+ * <p>Use the XML representation of &lt;view&gt; tags inside &lt;style&gt; tags
+ *    or use Tags.create() to instantiate View objects - not new View().</p>
+ *
  * <p>This is the heart of the Tags Framework. Instantiate this
  *    to create structures that shadow the corresponding HTML
  *    structures.</p>
  *
- * <p>Use Tags.create() to instantiate View objects - not new View().</p>
+ * <p>To use the View class, use a 'tag' attribute that is the name
+ *    of any HTML tag or the tag name of a custom tag which is a class
+ *    that extends View and implements a custom tag.</p>
+ *
+ * <p>The life cycle of a View object involves:</p>
+ * <ul>
+ *  <li>Instantiate - Use XML or Tags.create()</li>
+ *  <li>Render - Invoke view.render() - Optional for static HTML</li>
+ *  <li>Attach to the DOM - Use jQuery on the result from view.render() (unless it is static HTML)</li>
+ *  <li>Activate - Attach event handlers - optional if no event handlers needed</li>
+ * </ul>
+ *
+ * <p>
  *
  * @class
- * @name View
  */
 var View = Tags.define({
   tag:'view',
   extend:'class',
 
   /** Function to initialize the instance from the config value.
-   *
    *  This is called automatically by the Tags Framework infrastructure.
    *
    * @memberof View
@@ -268,13 +302,14 @@ var View = Tags.define({
    * <p>This method recursively renders nested content. Invoke it as this._super()
    *    from the overriding method to painlessly render nested content.</p>
    *
+   *
    * @memberof View
    * @instance
    * @return A jQuery DOM element
    */ 
   render: function() {
-    this.el = $(this.renderText());
-    return this.el;
+    this.$el = $(this.renderText());
+    return this.$el;
   },
   
   /** Return a string that is the XML represented by this object.
@@ -314,8 +349,7 @@ var View = Tags.define({
     var context = {buf:"<",first:true,tag:tag};    
     context.buf += tag;
     if (!this.id) {
-      this.id = "tag-"+Tags.sequentialNumber;
-      Tags.sequentialNumber++;
+      this.id = "tag-"+Tags.nextInSequence();
 //        log.debug("renderOpen id="+this.id+" seq="+Tags.sequentialNumber);
     }
     for (var key in this) {
@@ -410,6 +444,18 @@ var View = Tags.define({
     }
   },
   
+  /** Determine if the component has the value in its list of classes.
+   *
+   * @memberof View  
+   * @instance
+   * @param {string} theClass... the class to be tested
+   */
+  hasClass: function(theClass) {
+    var classList = this['class'].split(' ');
+    for (var n=0; n<classList.length; n++) if (classList[n] == theClass) return true;
+    return false;
+  },
+      
   /** Convenience method to add a string to the 'class' attribute of this object.
    *
    *  <p>This treats the 'class' attribute like a Set of strings where members are
@@ -417,8 +463,8 @@ var View = Tags.define({
    *     avoiding duplicate entries.</p>
    *
    *  <p>This can be called either before or after a DOM element has been created.
-   *     for this object. If one has been created, it will be in this.el. If
-   *     this.el exists, then the updated class value will be applied to it.
+   *     for this object. If one has been created, it will be in this.$el. If
+   *     this.$el exists, then the updated class value will be applied to it.
    *     Otherwise, the updated class value will be available to be applied to
    *     the DOM element when it is created.</p>
    *
@@ -446,7 +492,7 @@ var View = Tags.define({
       classText += key;
     }
     this.class = classText;
-    if (this.el) this.el.attr('class',classText);
+    if (this.$el) this.$el.attr('class',classText);
 //      log.debug("addClass "+originalClass+" --> "+this.class);
   },
    
@@ -457,8 +503,8 @@ var View = Tags.define({
    *     strings matching the string values in the class parameters will be removed</p>
    *
    *  <p>This can be called either before or after a DOM element has been created.
-   *     for this object. If one has been created, it will be in this.el. If
-   *     this.el exists, then the updated class value will be applied to it.
+   *     for this object. If one has been created, it will be in this.$el. If
+   *     this.$el exists, then the updated class value will be applied to it.
    *     Otherwise, the updated class value will be available to be applied to
    *     the DOM element when it is created.</p>
    *
@@ -487,7 +533,7 @@ var View = Tags.define({
       classText += key;
     }
     this.class = classText;
-    if (this.el) this.el.attr('class',classText);
+    if (this.$el) this.$el.attr('class',classText);
 //      log.debug("removeClass "+originalClass+" --> "+this.class);
   },
    
@@ -512,13 +558,13 @@ var View = Tags.define({
    * @instance
    */
   activate: function() {
-//      log.debug("ACTIVATE1 haveEl="+!!this.el+" id="+this.id);
-    if (!this.el && this.id) this.el = $("#"+this.id);
-//      log.debug("ACTIVATE2 haveEl="+!!this.el+" id="+this.id);
+//      log.debug("ACTIVATE1 haveEl="+!!this.$el+" id="+this.id);
+    if (!this.$el && this.id) this.$el = $(this.el || "#"+this.id);
+//      log.debug("ACTIVATE2 haveEl="+!!this.$el+" id="+this.id);
     if (this.on) {
       for (var key in this.on) {
 //          log.debug("ON key="+key);
-        this.el.on(key,this.on[key]);
+        this.$el.on(key,this.on[key]);
       }
     }
     if (this.content) {
@@ -546,7 +592,7 @@ $(document).ready(function() {
         lastTag.after(tag.render());
         tag.activate();
 //          log.debug("ACTIVATED id="+tag.id);
-        lastTag = tag.el;
+        lastTag = tag.$el;
       }
     }
   });

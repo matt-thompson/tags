@@ -12,12 +12,13 @@
 		// Set the completed state of this Todo.					
 		setCompleted: function(checked) {
 			this.completed = checked;
-			this.content[0].content.checkbox.el.prop('checked',checked);
+			this.content[0].content.checkbox.$el.prop('checked',checked);
 			if (checked) {
-				this.addClass('completed'); 
+				this.addClass('completed');
 			} else {
 				this.removeClass('completed');
 			}
+			this.todoapp.countActiveTodos();
 			this.todoapp.save();
 		},
 	
@@ -41,7 +42,7 @@
 					}},
 					label: {tag:'label', content:this.title, on: {
 						dblclick: function() {
-							self.el.addClass('editing').find('.edit').focus();
+							self.$el.addClass('editing').find('.edit').focus();
 						}
 					}},
 					destroyButton: {tag:'button', class:'destroy', on: {
@@ -56,8 +57,8 @@
 					},
 					blur: function() {
 						self.title = $(this).val();
-						self.el.removeClass('editing');
-						self.content[0].content.label.el.html(self.title);
+						self.$el.removeClass('editing');
+						self.content[0].content.label.$el.html(self.title);
 						self.todoapp.save();
 					}
 				}}
@@ -75,7 +76,7 @@
 		
 		// Remove this Todo entry from the DOM.
 		remove: function() {
-			this.el.remove();
+			this.$el.remove();
 		}
 				
 	});
@@ -100,18 +101,19 @@
 		// Count all the Todo entries that are not completed.
 		countActiveTodos: function() {
 			var activeCount = 0;
-			for (var n=0; n<this.todoList; n++) {
+			for (var n=0; n<this.todoList.length; n++) {
 				if (!this.todoList[n].completed) activeCount += 1;
 			}
+			this['clear-completed'].$el.toggle(activeCount < this.todoList.length);
 			return activeCount;
 		},
 		
 		update: function() {
-		  log.debug('update');
 			var activeTodoCount = this.countActiveTodos();
-			this['todo-count'].el.html('<strong>'+this.todoList.length+'</strong> item'+(activeTodoCount === 1 ? '' : 's')+' left');
-			this.footer.el.toggle(!!this.todoList.length);
-			this.main.el.toggle(this.todoList.length !== 0);
+		  log.debug('update activeTodoCount='+activeTodoCount);
+			this['todo-count'].$el.html('<strong>'+this.todoList.length+'</strong> item'+(activeTodoCount === 1 ? '' : 's')+' left');
+			this.footer.$el.toggle(!!this.todoList.length);
+			this.main.$el.toggle(this.todoList.length !== 0);
 			this.save();
 			this.checkHash();
 		},
@@ -120,7 +122,8 @@
 			config.todoapp = this;
 			var newTodo = Tags.create(config);
 			this.todoList.push(newTodo);
-			this['todo-list'].el.append(newTodo.render());
+			this['todo-list'].$el.append(newTodo.render());
+			this['new-todo'].$el.val('');
 			newTodo.activate();
 		},
 
@@ -197,7 +200,7 @@
       log.debug("CHECK hash="+hash+" option="+option);
 		  for (var n=0; n<this.todoList.length; n++) {
 		    var item = this.todoList[n];
-		    item.el.toggle(  (item.completed && option !== 'active') 
+		    item.$el.toggle(  (item.completed && option !== 'active') 
 		                  || (!item.completed && option !== 'completed')  );
 		  }
 		},
@@ -209,7 +212,7 @@
 			var todoItems = this.store('todos-mytodo');
 			for (var n=0; n<todoItems.length; n++) {
 				var item = todoItems[n];
-				if (!item || !item.tag || !item.title || item.el) continue;
+				if (!item || !item.tag || !item.title || item.$el) continue;
 				this.addTodo(todoItems[n]);
 			}
 			this.update();
