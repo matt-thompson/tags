@@ -112,8 +112,16 @@ $(document).append(view.render());  // Render and attach to the DOM
 view.activate(); // Activate
 </pre>
 
-<p>This gives one a lot of flexibility in creating View 
-   components for rendering dynamic HTML. You have the full power of
+<p>A View object can be attached to static HTML in which case the 
+   the render and attach steps are not used. In this case, 
+   set the 'el' attribute to a CSS selector or set the 'id' attribute
+   to the 'id' attribute of the static HTML element. The default
+   activate() method checks for the presence of the '$el' attribute
+   (which would normally be set by the render() method if it were
+   used) and if not there, it will use the 'el' attribute or the 'id'
+   attribute to find the DOM element and set the '$el' attribute.</p>
+   
+<p>You have the full power of
    Javascript to use to create the input to the Tags.create() method.
    You can specify event handlers and instance-specific methods
    in the configuration object passed to Tags.create().</p>
@@ -193,7 +201,8 @@ Tags.define({
 <ul>
   <li>You can get away without coding the renderText() method if your custom tag renders just like an HTML tag. In this case, you indicate the tag name to use as the attribute 'htmlTag' and rely on the default renderText() method.</li>
   <li>You can invoke an overridden method using the syntax "this._super()". This is part of the Class.js implementation.</li>
-  <li>The activate() method of the View Class makes sure this.el is set. It is normally set by the render() method, but if not, and the object has an 'id' attribute, then it is assumed that the 'id' matches the HTML tag and is used to select the HTML tag.</li>
+  <li>By convention, jQuery DOM elements start with '$'. this.$el is the only one used in the core module.
+  <li>The activate() method of the View Class makes sure this.$el is set. It is normally set by the render() method, but if not, and the object has an 'id' attribute, then it is assumed that the 'id' matches the HTML tag and is used to select the HTML tag.</li>
 </ul>
 
 <h2>Widget Library</h2>

@@ -1,6 +1,11 @@
+
 var log = log || {debug:function() {}};
 
 //(function($) {
+
+var parseCssInt = function(el,key) {
+  return parseInt(el.css(key)) || 0;
+};
 
 /** Implement a set of Widgets that provide layout capabilities.
  * <p>Implement widgets which
@@ -20,9 +25,10 @@ var log = log || {debug:function() {}};
  *    within &lt;style&gt; tags with type of 'text/custom-tags'. They
  *    may also be used with standard View API from Javascript.</p>
  *
- * @example
+ * 
+<h3>Example</h3>
 <caption>This demonstrates all of the boxlib Widgets (<a href='../examples/holy-grail.html'>Holy Grail Example</a>)</caption>
-<pre>
+<pre style='border:solid thin green; overflow:auto; height:500px; padding:3px 4px; background:#efe;'>
 &lt;!doctype html&gt;
 &lt;html&gt;
 &lt;head&gt;
@@ -102,7 +108,8 @@ var log = log || {debug:function() {}};
 &lt;/html&gt;
 </pre>
  
- * @module boxlib
+ * @module
+ * @name boxlib
  */
   'use strict';
   
@@ -135,6 +142,18 @@ var log = log || {debug:function() {}};
    *    no FLEX box present. 
    * </p>
    *
+   * <p>This class extends {@link View} - refer to the {@link View} class for inherited methods - including:</p>
+   * <ul>
+   *  <li>render() - render HTML and return jQuery DOM object (see {@link View#render})</li>
+	 *  <li>activate() - do post-DOM attachment processing (see {@link View#activate})</li>
+	 *  <li>renderText() - render HTML and return HTML text as string (see {@link View#renderText})</li>
+	 *  <li>renderAs(tagName) - render HTML as if it were the indicated tag (see {@link View#renderAs})</li>
+	 *  <li>addContent(contentToAdd) - add content prior to rendering (see {@link View#addContent})</li>
+	 *  <li>hasClass(theClass) - check to see if the class is present (see {@link View#hasClass})</li>
+	 *  <li>addClass(theClass) - add class or classes (see {@link View#addClass})</li>
+	 *  <li>removeClass(theClass) - remove class or classes (see {@link View#remove})</li>
+   * </ul>
+   *
    * @class
    * @name slider
    */
@@ -145,17 +164,17 @@ var log = log || {debug:function() {}};
 
     setTarget: function(pos) {
       if (this.leftTarget) {
-        this.leftTarget.$el.css({right:'auto',width:(pos.left - this.leftTarget.$el.position().left - this.borderSize)+'px'});
+        this.leftTarget.$el.css({width:(pos.left - this.leftTarget.$el.position().left - this.borderSize)+'px'});
       } else if (this.rightTarget) {
         var pos_right = this.parent.$el.outerWidth(true) - pos.left;
-        var width = pos_right - parseInt(this.rightTarget.$el.css('right')) - this.borderSize;
-        this.rightTarget.$el.css({left:'auto',width:width+'px'});
+        var width = pos_right - parseCssInt(this.rightTarget.$el,'right') - this.borderSize;
+        this.rightTarget.$el.css({width:width+'px'});
       } else if (this.topTarget) {
-        this.topTarget.$el.css({bottom:'auto',height:(pos.top - this.topTarget.$el.position().top - this.borderSize)+'px'});
+        this.topTarget.$el.css({height:(pos.top - this.topTarget.$el.position().top - this.borderSize)+'px'});
       } else if (this.bottomTarget) {
         var pos_bottom = this.parent.$el.outerHeight(true) - pos.top;
-        var height = pos_bottom - parseInt(this.bottomTarget.$el.css('bottom')) - this.borderSize;
-        this.bottomTarget.$el.css({top:'auto',height:height+'px'});
+        var height = pos_bottom - parseCssInt(this.bottomTarget.$el,'bottom') - this.borderSize;
+        this.bottomTarget.$el.css({height:height+'px'});
       }
     },
    
@@ -201,18 +220,18 @@ var log = log || {debug:function() {}};
         log.debug("DOWN slider x="+self.lastGoodPos.left
                  +" event x="+e.pageX
                  +" posFix="+posFix);
-        self.$el.css({left:0,right:0,top:0,bottom:0,width:'auto',height:'auto'});
+        self.$el.css({left:0,right:0,width:'100%',height:'100%'});
         return false;
       }).on('mouseup',function(e) {
         self.isDown = false;
         if (self.leftTarget) {
-          self.$el.css({top:0,bottom:0,left:e.pageX+'px',right:'auto',width:'4px',cursor:'e-resize',opacity:'.01','background-color':'white','z-index':'1000'});
+          self.$el.css({top:0,bottom:0,left:e.pageX+'px',width:'4px',cursor:'e-resize',opacity:'.01','background-color':'white','z-index':'1000'});
         } else if (self.rightTarget) {
-          self.$el.css({top:0,bottom:0,left:'auto',right:(self.parent.$el.outerWidth(true)-e.pageX)+'px',width:'4px',cursor:'e-resize',opacity:'.01','background-color':'white','z-index':'1000'});
+          self.$el.css({top:0,bottom:0,right:(self.parent.$el.outerWidth(true)-e.pageX)+'px',width:'4px',cursor:'e-resize',opacity:'.01','background-color':'white','z-index':'1000'});
         } else if (self.topTarget) {
-          self.$el.css({left:0,right:0,top:e.pageY,bottom:'auto',height:'4px',cursor:'n-resize',opacity:'.01','background-color':'white','z-index':'1000'});
+          self.$el.css({left:0,right:0,top:e.pageY,height:'4px',cursor:'n-resize',opacity:'.01','background-color':'white','z-index':'1000'});
         } else if (self.bottomTarget) {
-          self.$el.css({left:0,right:0,top:'auto',bottom:(self.parent.$el.outerHeight(true)-e.pageY)+'px',height:'4px',cursor:'n-resize',opacity:'.01','background-color':'white','z-index':'1000'});
+          self.$el.css({left:0,right:0,bottom:(self.parent.$el.outerHeight(true)-e.pageY)+'px',height:'4px',cursor:'n-resize',opacity:'.01','background-color':'white','z-index':'1000'});
         }
         self.parent.adjustFlex(false);
         self.parent.freezeSize();
@@ -258,7 +277,7 @@ var log = log || {debug:function() {}};
    *   <li><span>layout='wrap'</span>
    *     <p>This is a FIXED component. The horizontal size is determined by CSS
    *        or by the natural size like layout='fixed', but the vertical size
-   *        is adjusted to to the smallest size that will enclose any contained
+   *        is adjusted to the smallest size that will enclose any contained
    *        components.</p>
    *   </li>
    *   <li><span>layout='extend'</span>
@@ -275,6 +294,18 @@ var log = log || {debug:function() {}};
    * <p>In addition to the fixed size components and the one FLEX component for layout, the &lt;hbox&gt; Widget
    *    may also contain a &lt;slider&gt; component between any two of its layout components. These have the effect
    *    of adjusting the size of one of the fixed size components and the FLEX component.</p>
+   *
+   * <p>This class extends {@link View} - refer to the {@link View} class for inherited methods - including:</p>
+   * <ul>
+   *  <li>render() - render HTML and return jQuery DOM object (see {@link View#render})</li>
+	 *  <li>activate() - do post-DOM attachment processing (see {@link View#activate})</li>
+	 *  <li>renderText() - render HTML and return HTML text as string (see {@link View#renderText})</li>
+	 *  <li>renderAs(tagName) - render HTML as if it were the indicated tag (see {@link View#renderAs})</li>
+	 *  <li>addContent(contentToAdd) - add content prior to rendering (see {@link View#addContent})</li>
+	 *  <li>hasClass(theClass) - check to see if the class is present (see {@link View#hasClass})</li>
+	 *  <li>addClass(theClass) - add class or classes (see {@link View#addClass})</li>
+	 *  <li>removeClass(theClass) - remove class or classes (see {@link View#remove})</li>
+   * </ul>
    *
    * @class
    * @name hbox
@@ -304,7 +335,7 @@ var log = log || {debug:function() {}};
         if (itemLayout == 'free') continue;
         cumulativeWidth += gap;
         if (itemLayout == 'flex') {
-          var minWidth = parseInt(item.$el.css('min-width') || 0);
+          var minWidth = parseCssInt(item.$el,'min-width') || 0;
           if (minWidth < 10) minWidth = 10;
           cumulativeWidth += minWidth;
         } else {
@@ -327,7 +358,8 @@ var log = log || {debug:function() {}};
 //    },
    
     adjustFlex: function(checkOnly) {
-      var gap = parseInt(this.gap) || 0;
+      var gap = 0;
+      if (this.gap) gap = parseInt(this.gap) || 0;
       var content = this.content || [];
       if (!$.isArray(content)) content = [content];
       if (this.$el.css('position') != 'absolute') this.$el.css('position','relative');
@@ -340,6 +372,7 @@ var log = log || {debug:function() {}};
       // Go forward until we hit a FLEX item then go to the end and go back until
       // we hit the FLEX item again. If we never hit a FLEX item, just stop when we
       // get to the end.
+      log.debug("HBOX id="+this.id+" LAYOUT="+(this.layout||'NONE'));
       for (var n=0; n>=0 && n<content.length; n+=delta) {
         var item = content[n];
         if (!Tags.isTag(item)) continue;
@@ -347,12 +380,12 @@ var log = log || {debug:function() {}};
         if (checkOnly && itemTag === 'SLIDER') continue;
         var itemLayout = item.layout || 'fixed';
         if (itemLayout == 'free') continue;
-//        log.debug("HBOX-"+(delta > 0 ? "LtoR" : "RtoL")+" layout="+itemLayout+" X="+x+" item.wd="+item.$el.outerWidth(true));
         if (delta > 0) {
           item.$el.css({position:'absolute',left:x});
         } else {
           item.$el.css({position:'absolute',right:x});
         }
+        log.debug("HBOX-"+(delta > 0 ? "LtoR" : "RtoL")+" id="+(item.id || "NONE"));
         if (itemLayout == 'wrap' || itemLayout == 'extend') {
           // Wrap expands horizontally to be large enough to wrap all of the children.
           var itemContent = item.content || [];
@@ -361,30 +394,32 @@ var log = log || {debug:function() {}};
           for (var m=0; m<itemContent.length; m++) {
             var child = itemContent[m];
             if (!Tags.isTag(child) || child.layout == 'free') continue;
-            var childWidth = parseInt(child.$el.css('left')) + child.$el.outerWidth(true);
+            log.debug("HBOX child HT="+child.outerHeight(true));
+            var childWidth = parseCssInt(child.$el,'left') + child.$el.outerWidth(true);
             if (childWidth > myWidth) myWidth = childWidth;
           }
           item.$el.height(myHeight); // FIXME: Assumes no border, padding, margin - remove assumption later
         } else if (itemLayout == 'flex') {
+          log.debug("FLEX delta="+delta);
           if (delta > 0) {
             x = 0;
             n = content.length;
             delta = -1;
             lastItem = null;
-            var minWidth = parseInt(item.$el.css('min-width') || 0);
+            var minWidth = parseCssInt(item.$el,'min-width');
             if (minWidth < 10) minWidth = 10;
             cumulativeWidth += minWidth;
 //            if (cumulativeWidth > maxWidth) return false;
             continue;  // Continue from the right
           } else {
             var wd = self.$el.outerWidth(true);
-            var lf = parseInt(item.$el.css('left'));
+            var lf = parseCssInt(item.$el,'left');
             var rt = x;
             var borderWidth = getBorderWidth(item.$el);
             item.$el.css('width',(wd - lf - rt - borderWidth)+"px");
-            item.$el.css('right','auto');
+            item.$el.css('right',0);
 //              var startTime = 0;
-//              log.debug("EXPND id="+item.id+" wd="+wd+" lf="+lf+" rt="+rt+" css.lf/rt/wd="+item.$el.css('left')+'/'+item.$el.css('right')+'/'+item.$el.css('width')+" outerWidth="+item.$el.outerWidth(true)+" width="+item.$el.width()+" borderWidth="+borderWidth);
+            log.debug("EXPND id="+item.id+" wd="+wd+" lf="+lf+" rt="+rt+" css.lf/rt/wd="+item.$el.css('left')+'/'+item.$el.css('right')+'/'+item.$el.css('width')+" outerWidth="+item.$el.outerWidth(true)+" width="+item.$el.width()+" borderWidth="+borderWidth);
             if (!checkOnly) {
               $(window).resize(function() {
                   wd = self.$el.outerWidth(true);
@@ -396,6 +431,7 @@ var log = log || {debug:function() {}};
               });
             }
             item.$el.css({position:'absolute',right:x+'px'});
+            log.debug("FLEX x/y/w/h="+item.$el.css('left')+'/'+item.$el.css('top')+'/'+item.$el.width()+'/'+item.$el.height());
             return true;
           }
         }
@@ -413,6 +449,7 @@ var log = log || {debug:function() {}};
           cumulativeWidth += width;
           lastItem = item;
 //          if (cumulativeWidth > maxWidth) return false;
+        log.debug("HBOX-"+(delta > 0 ? "LtoR" : "RtoL")+" id="+(item.id || "NONE")+" layout="+itemLayout+" X="+x+" item.wd="+item.$el.outerWidth(true)+" item.ht="+item.$el.outerHeight(true));
         }
       }
       return true;
@@ -454,6 +491,22 @@ var log = log || {debug:function() {}};
    *   </li>
    *  </ul>
    *
+   * <p>In addition to the fixed size components and the one FLEX component for layout, the &lt;hbox&gt; Widget
+   *    may also contain a &lt;slider&gt; component between any two of its layout components. These have the effect
+   *    of adjusting the size of one of the fixed size components and the FLEX component.</p>
+   *
+   * <p>This class extends {@link View} - refer to the {@link View} class for inherited methods - including:</p>
+   * <ul>
+   *  <li>render() - render HTML and return jQuery DOM object (see {@link View#render})</li>
+	 *  <li>activate() - do post-DOM attachment processing (see {@link View#activate})</li>
+	 *  <li>renderText() - render HTML and return HTML text as string (see {@link View#renderText})</li>
+	 *  <li>renderAs(tagName) - render HTML as if it were the indicated tag (see {@link View#renderAs})</li>
+	 *  <li>addContent(contentToAdd) - add content prior to rendering (see {@link View#addContent})</li>
+	 *  <li>hasClass(theClass) - check to see if the class is present (see {@link View#hasClass})</li>
+	 *  <li>addClass(theClass) - add class or classes (see {@link View#addClass})</li>
+	 *  <li>removeClass(theClass) - remove class or classes (see {@link View#remove})</li>
+   * </ul>
+   *
    * @class
    * @name vbox
    */ 
@@ -480,7 +533,7 @@ var log = log || {debug:function() {}};
         if (itemLayout == 'free') continue;
         cumulativeHeight += gap;
         if (itemLayout == 'expand') {
-          var minHeight = parseInt(item.$el.css('min-height') || 0);
+          var minHeight = parseCssInt(item.$el,'min-height');
           if (minHeight < 10) minHeight = 10;
           cumulativeHeight += minHeight;
         } else {
@@ -500,7 +553,7 @@ var log = log || {debug:function() {}};
       var lastItem = null;
       var cumulativeHeight = 0;
 //      var maxHeight = this.$el.outerHeight(true);
-//      log.debug("VBOX content.len="+content.length);
+      log.debug("VBOX id="+(this.id || "NONE")+" layout="+(this.layout || "NONE")+" content.len="+content.length);
       var delta = 1;
       for (var n=0; n<content.length; n+=delta) {
         var item = content[n];
@@ -509,7 +562,7 @@ var log = log || {debug:function() {}};
         var itemTag = item.tag.toUpperCase();
         if (checkOnly && itemTag === 'SLIDER') continue;
         var itemLayout = item.layout || 'fixed';
-//        log.debug("VBOX-TtoB layout="+itemLayout+" Y="+y+" item.ht="+item.$el.outerHeight(true));
+        log.debug("VBOX-TtoB id="+(item.id || "NONE")+" layout="+itemLayout+" Y="+y+" item.ht="+item.$el.outerHeight(true));
         if (itemLayout == 'free') continue;
         if (delta > 0) {
           item.$el.css({position:'absolute',top:y});
@@ -524,8 +577,8 @@ var log = log || {debug:function() {}};
           for (var m=0; m<itemContent.length; m++) {
             var child = itemContent[m];
             if (!Tags.isTag(child) || child.layout == 'free') continue;
-//            log.debug("VBOX child["+m+"] isTag="+Tags.isTag(child));
-            var childHeight = parseInt(child.$el.css('top')) + child.$el.outerHeight(true);
+            var childHeight = parseCssInt(child.$el,'top') + child.$el.outerHeight(true);
+            log.debug("VBOX child["+m+"] id="+(child.id || "NONE")+" HT="+childHeight+" ("+child.$el.css('top')+" plus "+child.$el.outerHeight(true)+") isTag="+Tags.isTag(child));
             if (childHeight > myHeight) myHeight = childHeight;
           }
           item.$el.height(myHeight); // assume no border, padding, margin (BPM)
@@ -536,20 +589,20 @@ var log = log || {debug:function() {}};
               child.$el.height(myHeight);
             }
           }
-//          log.debug("VBOX wrap myHt="+myHeight);
+          log.debug("VBOX id="+(this.id || "NONE")+" wrap myHt="+myHeight);
         } else if (itemLayout == 'flex') {
           if (delta > 0) {
             y = 0;
             delta = -1;
             lastItem = null;
-            var minHeight = parseInt(item.$el.css('min-height') || 0);
+            var minHeight = parseCssInt(item.$el,'min-height');
             if (minHeight < 10) minHeight = 10;
             cumulativeHeight += minHeight;
 //          if (cumulativeHeight > maxHeight) return false;
           } else {
             item.$el.css({position:'absolute',bottom:y});
             var ht = self.$el.outerHeight(true);
-            var tp = parseInt(item.$el.css('top'));
+            var tp = parseCssInt(item.$el,'top');
             var bt = y;
 ///              var startTime = 0;
             var borderHeight = getBorderHeight(item.$el);
@@ -592,6 +645,18 @@ var log = log || {debug:function() {}};
    *
    * <p>Use Tags.create() to instantiate this class from Javascript or use the &lt;tabs&gt; tag to instantiate it as static HTML.</p>
    *
+   * <p>This class extends {@link View} - refer to the {@link View} class for inherited methods - including:</p>
+   * <ul>
+   *  <li>render() - render HTML and return jQuery DOM object (see {@link View#render})</li>
+	 *  <li>activate() - do post-DOM attachment processing (see {@link View#activate})</li>
+	 *  <li>renderText() - render HTML and return HTML text as string (see {@link View#renderText})</li>
+	 *  <li>renderAs(tagName) - render HTML as if it were the indicated tag (see {@link View#renderAs})</li>
+	 *  <li>addContent(contentToAdd) - add content prior to rendering (see {@link View#addContent})</li>
+	 *  <li>hasClass(theClass) - check to see if the class is present (see {@link View#hasClass})</li>
+	 *  <li>addClass(theClass) - add class or classes (see {@link View#addClass})</li>
+	 *  <li>removeClass(theClass) - remove class or classes (see {@link View#remove})</li>
+   * </ul>
+   *
    * @class
    * @name tabs
    */
@@ -603,14 +668,13 @@ var log = log || {debug:function() {}};
     renderText: function() {
       var content = this.content;
       this.content = [];
-      var hbox = Tags.create({tag:'hbox', 'class':'tags-tab-container', content:[{tag:'div', layout:'free', 'class':'tags-tab-spacer'}]});
-      this.content.push(hbox);
-      var buttons = this.content[0];
+      var buttons = Tags.create({tag:'hbox', 'class':'tags-tab-container', content:[{tag:'div', layout:'free', 'class':'tags-tab-spacer'}]});
+      this.content.push(buttons);
       for (var n=0; n<content.length; n++) {
         var item = content[n];
         if (!Tags.isTag(item,'tab')) continue;
         if (!item.id) item.id = 'tab-'+Tags.nextInSequence();
-        item.button = Tags.create({tag:'a', href:'#'+item.id, 'class':'tags-tab-button', content:[{tag:'div', style:'position:relative; top:50%; margin-top:-.7rem;', content:item.label}]});
+        item.button = Tags.create({tag:'div', href:'#'+item.id, 'class':'tags-tab-button', content:[{tag:'div', style:'position:relative; bottom:.4rem', content:item.label}]});
         buttons.content.push(item.button);
         item.addClass('tags-tab-choice');
         this.content.push(item);
@@ -618,16 +682,34 @@ var log = log || {debug:function() {}};
       return this._super();
     }
     
+//    activate: function() {
+//      // Center the text in the tabs
+//      var ht = this.$el.outerHeight();
+//      $("a",this.$el).each(function() 
+//    }
+    
   });
   
   /** Provide the name for a tab and a container for the HTML exposed when the tab is clicked.
    *
    * <p>Use Tags.create() to instantiate this class from Javascript or use the &lt;tab&gt; tag to instantiate it as static HTML.</p>
    *
-   * @param {string} label The tab label
+   * <p>This class extends {@link View} - refer to the {@link View} class for inherited methods - including:</p>
+   * <ul>
+   *  <li>render() - render HTML and return jQuery DOM object (see {@link View#render})</li>
+	 *  <li>activate() - do post-DOM attachment processing (see {@link View#activate})</li>
+	 *  <li>renderText() - render HTML and return HTML text as string (see {@link View#renderText})</li>
+	 *  <li>renderAs(tagName) - render HTML as if it were the indicated tag (see {@link View#renderAs})</li>
+	 *  <li>addContent(contentToAdd) - add content prior to rendering (see {@link View#addContent})</li>
+	 *  <li>hasClass(theClass) - check to see if the class is present (see {@link View#hasClass})</li>
+	 *  <li>addClass(theClass) - add class or classes (see {@link View#addClass})</li>
+	 *  <li>removeClass(theClass) - remove class or classes (see {@link View#remove})</li>
+   * </ul>
    *
    * @class
    * @name tab
+   * @property {string} label The tab label
+   *
    */
   Tags.define({
     tag:'tab',

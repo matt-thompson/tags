@@ -3,11 +3,21 @@
 <head>
   <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
   <title>The Holy Grail of Layouts: Tags Version</title>
-  <link rel="stylesheet" href="../../css/boxlib.css">
+  <link rel="stylesheet" href="css/boxlib.css">
   <script src="../../bower_components/jquery/jquery.js"></script>
-  <script src="../../js/class.js"></script>
+  <script src="../../bower_components/log4javascript/log4javascript.js"></script>
+  <script>
+    var log = log4javascript.getDefaultLogger();
+    log.debug("DEBUG - Enabled");
+  </script>
   <script src="../../js/tags.js"></script>
+  <script>
+    log.debug("DEBUG-2");
+  </script>
   <script src="../../js/boxlib.js"></script>
+  <script>
+    log.debug("DEBUG-3");
+  </script>
   <style type="text/css">
     html {margin:0; width:100%; height:100%;}
     body {margin:0; width:100%; height:100%; overflow:hidden; background-color: #eee;}

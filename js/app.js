@@ -28,10 +28,6 @@
 				this.addClass('completed');
 			}
 			var self = this;
-			// Note that we can create content as an array or plain object. The 
-			// advantage to using a plain object is that we can traverse down
-			// into the child structure using symbolic names.	See how we use that
-			// in the setCompleted() function.
 			this.addContent([
 				{tag:'div', class:'view', content: {
 					checkbox: {tag:'input', class:'toggle', type:'checkbox', checked:(this.completed ? 'checked' : null), on: {
@@ -105,12 +101,12 @@
 				if (!this.todoList[n].completed) activeCount += 1;
 			}
 			this['clear-completed'].$el.toggle(activeCount < this.todoList.length);
+			$('#toggle-all').prop('checked',activeCount === 0);
 			return activeCount;
 		},
 		
 		update: function() {
 			var activeTodoCount = this.countActiveTodos();
-		  log.debug('update activeTodoCount='+activeTodoCount);
 			this['todo-count'].$el.html('<strong>'+this.todoList.length+'</strong> item'+(activeTodoCount === 1 ? '' : 's')+' left');
 			this.footer.$el.toggle(!!this.todoList.length);
 			this.main.$el.toggle(this.todoList.length !== 0);
@@ -197,7 +193,6 @@
 
 		  var hash = document.location.hash;
 		  var option = hash.split('/')[1];
-      log.debug("CHECK hash="+hash+" option="+option);
 		  for (var n=0; n<this.todoList.length; n++) {
 		    var item = this.todoList[n];
 		    item.$el.toggle(  (item.completed && option !== 'active') 
