@@ -4,8 +4,8 @@
 (function($) {
 	'use strict';
 
-  var ENTER_KEY = 13;
-      
+	var ENTER_KEY = 13;
+			
 	// Define a Custom Tag for a Todo record.
 	Tags.define({tag:'todo', extend:'view',
 
@@ -67,7 +67,7 @@
 			return {tag:'todo',
 							completed:this.completed,
 							title:this.title
-						 };
+						};
 		},
 		
 		// Remove this Todo entry from the DOM.
@@ -88,12 +88,12 @@
 	
 		todoList: [],
 	
-    // Load/Save data from/to LocalStorage  
-    store: function (namespace, data) {
-      return arguments.length > 1 ? localStorage.setItem(namespace, JSON.stringify(data))
-                                  : JSON.parse(localStorage.getItem(namespace)) || [];
-    },
-  
+		// Load/Save data from/to LocalStorage	
+		store: function (namespace, data) {
+			return arguments.length > 1 ? localStorage.setItem(namespace, JSON.stringify(data))
+																	: JSON.parse(localStorage.getItem(namespace)) || [];
+		},
+	
 		// Count all the Todo entries that are not completed.
 		countActiveTodos: function() {
 			var activeCount = 0;
@@ -191,13 +191,12 @@
 		
 		checkHash: function() {
 
-		  var hash = document.location.hash;
-		  var option = hash.split('/')[1];
-		  for (var n=0; n<this.todoList.length; n++) {
-		    var item = this.todoList[n];
-		    item.$el.toggle(  (item.completed && option !== 'active') 
-		                  || (!item.completed && option !== 'completed')  );
-		  }
+			var hash = document.location.hash;
+			var option = hash.split('/')[1];
+			for (var n=0; n<this.todoList.length; n++) {
+				var item = this.todoList[n];
+				item.$el.toggle( (item.completed && option !== 'active') || (!item.completed && option !== 'completed') );
+			}
 		},
 		
 		activate: function() {
@@ -213,7 +212,7 @@
 			this.update();
 			self = this;
 			window.addEventListener('hashchange',function() {
-			  self.checkHash();
+				self.checkHash();
 			});
 		}
 
