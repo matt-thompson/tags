@@ -1,8 +1,8 @@
 //var log = log || {debug:function() {}};
-    var logy = log4javascript.getDefaultLogger();
-    logy.debug("DEBUG-TAGS - Enabled");
+    var log = log4javascript.getDefaultLogger();
+    log.debug("DEBUG-TAGS - Enabled");
 
-logy.debug("TAGS ********");
+log.debug("TAGS ********");
   
 //(function($) {
 
@@ -688,29 +688,27 @@ Tags.defaultClass = View;
 // Apply any custom-tags found in script tags with type='text/custom-tag'  
 
 $(document).ready(function() {
-  logy.debug("READY");
-  logy.debug("TAGS ready script.len="+$("script").length);
-  logy.debug("TAGS ready LEN="+$("script[type='text/custom-tags']").length);
+  log.debug("READY");
+  log.debug("TAGS ready script.len="+$("script").length);
+  log.debug("TAGS ready LEN="+$("script[type='text/custom-tags']").length);
   $("script[type='text/custom-tags']").each(function() {
     var scriptTag = $(this);
     var lastTag = scriptTag;
     var wrapper = Tags.create("<wrapper>"+scriptTag.html()+"</wrapper>");
-    logy.debug("SCRIPT ...");
+    log.debug("SCRIPT ...");
     for (var n=0; n<wrapper.content.length; n++) {
       var tag = wrapper.content[n];
       if (Tags.isTag(tag)) {
-        logy.debug("RENDERING ... id="+(tag.id || "NONE"));
+        log.debug("RENDERING ... id="+(tag.id || "NONE"));
         lastTag.after(tag.render());
         tag.activate();
-        logy.debug("ACTIVATED id="+(tag.id || "NONE"));
+        log.debug("ACTIVATED id="+(tag.id || "NONE"));
         lastTag = tag.$el;
       }
     }
   });
 //  log.debug("PARSE TIME="+Tags.parseTime+" WORK TIME="+Tags.workTime);
 });
-
-logy.debug("TAGS DONE");
 
 //})(jQuery);
   
