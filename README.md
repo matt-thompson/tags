@@ -5,6 +5,6 @@
 ## Tags Framework Documentation
 
 * [Getting Started](http://randomsoftwareideas.com/tags.html)
-* [API](http://randomsoftwareideas.com/tags-framework/tags/docs/jsdocs/index.html)
+* [API](http://randomsoftwareideas.com/tags/docs/jsdocs/index.html)
 * [GitHub](https://github.com/matt-thompson/tags-framework)
 
