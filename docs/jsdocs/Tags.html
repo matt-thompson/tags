@@ -1,0 +1,829 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>JSDoc: Namespace: Tags</title>
+    
+    <script src="scripts/prettify/prettify.js"> </script>
+    <script src="scripts/prettify/lang-css.js"> </script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link type="text/css" rel="stylesheet" href="styles/prettify-tomorrow.css">
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc-default.css">
+</head>
+
+<body>
+
+<div id="main">
+    
+    <h1 class="page-title">Namespace: Tags</h1>
+    
+    
+
+
+
+<section>
+    
+<header>
+    <h2>
+    
+      Tags
+    
+    </h2>
+    
+</header>  
+
+<article>
+    <div class="container-overview">
+    
+    
+        
+            <div class="description">Implement the core functionality of the Tags Framework.
+
+<p>The Tags namespace provides the capability to define Tag classes using
+   Tags.define() and instantiate Tags classes using Tags.create().</p>
+
+<p>Tag classes mimic XML. They have a 'tag' attribute which holds
+   the tag name and a 'content' attribute which holds nested content.</p></div>
+        
+        
+        
+<dl class="details">
+    
+        
+    
+    
+    
+
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="tags.js.html">tags.js</a>, <a href="tags.js.html#line72">line 72</a>
+    </li></ul></dd>
+    
+    
+    
+    
+    
+    
+    
+</dl>
+
+        
+        
+    
+    </div>
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+        <h3 class="subsection-title">Methods</h3>
+        
+        <dl>
+            
+<dt>
+    
+    <h4 class="name" id="create"><span class="type-signature">&lt;static> </span>create<span class="signature">(config, <span class="optional">defaultClass</span>)</span><span class="type-signature"></span></h4>
+    
+    
+</dt>
+<dd>
+    
+    
+    <div class="description">
+        Create a new instance of a Tag class.
+
+ <p>Instantiation information
+    is provided by the config parameter. It must, at least have a 'tag'
+    attribute which is used to select the Tag class to be used.</p>
+
+ <p>It is possible that the value of the 'tag' attribute does not map
+    to any Tag class. In that case, a default class will be used which 
+    can be specified with the optional 'defaultClass'
+    parameter. If not provided, the built-in View class will be used. This
+    behavior is used to allow the View class to be used to represent
+    arbitrarily complex HTML structures.</p>
+
+ <p>The create() method can be used to instantiate a complete Tag object
+    structure corresponding to an XML structure. 
+    It is called recursively to process the
+    nested content contained in the config.content attribute.</p>
+    The config parameter
+    describes Tag object structure to be instantiated using XML 
+    or Javascript as described below.</p>
+
+ <p>The config parameter:</p>
+ <ul>
+   <li>Tag Object
+     <p>If the config parameter is already a Tag object, return it 
+        without further processing. A Tag object is recognized by 
+        having an '_isTag' attribute which is set by Tags.create().</p>
+   </li>
+   <li>Plain Object
+     <p>config.tag will indicate the Class to be instantiated</p>
+     <p>config.content is the nested content</p>
+     <p>other config attributes become attributes of the instantiated object</p>
+   </li>
+   <li>XML-Node
+     <p>the tag name indicates the Class to be instantiated</p>
+     <p>nested content of the XML becomes the nested content of the instantiated object</p>
+     <p>other attributes of the XML become attributes of the instantiated object</p>
+   </li>
+   <li>String that starts with '&lt;'
+     <p>it is interpreted as XML, parsed and processed as an XML-Node</p>
+   </li>
+   <li>String|number|boolean
+     <p>evaluates to the value of config as a string</p>
+   </li>
+ </ul>
+
+ <p>The create() function calls itself recursively to process nested content.</p>
+ 
+ <p>This method pretty much does what you expect it to do. Here
+    is an example ...</p>
+
+ <pre class='code'>
+   var tag = Tags.create(
+        "&lt;div class='emphatic'>"
+      +   "Hello "
+      +   "&lt;span style='color:red;'&gt;World&lt;/span&gt;&lt;"
+      + "/div&gt;");
+ </pre>
+
+ <p>To do the same thing with Javascript ...</p>
+
+ <pre class='code'>
+   var tag = Tags.create(
+      {tag:'div', class:'emphatic', content: [
+        'Hello '
+        {tag:'span', style:'color:red;', content:'World'
+      }]);
+ </pre>
+
+ <p>The create() function calls itself recursively to process nested content. That is why
+    it needs to be able to handle non-XML strings, numbers and booleans.</p>
+    </div>
+    
+
+    
+    
+    
+    
+    
+        <h5>Parameters:</h5>
+        
+
+<table class="params">
+    <thead>
+	<tr>
+		
+		<th>Name</th>
+		
+		
+		<th>Type</th>
+		
+		
+		<th>Argument</th>
+		
+		
+		
+		
+		<th class="last">Description</th>
+	</tr>
+	</thead>
+	
+	<tbody>
+	
+	
+        <tr>
+            
+                <td class="name"><code>config</code></td>
+            
+            
+            <td class="type">
+            
+                
+<span class="param-type">Object</span>
+|
+
+<span class="param-type">XML-Node</span>
+|
+
+<span class="param-type">string</span>
+|
+
+<span class="param-type">number</span>
+|
+
+<span class="param-type">boolean</span>
+|
+
+<span class="param-type">null</span>
+
+
+            
+            </td>
+            
+            
+                <td class="attributes">
+                
+                    
+                
+                    
+                
+                </td>
+            
+            
+            
+            
+            <td class="description last">The specifier of what is to be created</td>
+        </tr>
+	
+	
+	
+        <tr>
+            
+                <td class="name"><code>defaultClass</code></td>
+            
+            
+            <td class="type">
+            
+                
+<span class="param-type">string</span>
+
+
+            
+            </td>
+            
+            
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+                    
+                
+                    
+                
+                </td>
+            
+            
+            
+            
+            <td class="description last">the tag name of the Tag class to be used if config.tag does not map to know Tag class</td>
+        </tr>
+	
+	
+	</tbody>
+</table>
+    
+    
+    
+<dl class="details">
+    
+        
+    
+    
+    
+
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="tags.js.html">tags.js</a>, <a href="tags.js.html#line243">line 243</a>
+    </li></ul></dd>
+    
+    
+    
+    
+    
+    
+    
+</dl>
+
+    
+    
+
+    
+
+    
+    
+    
+    
+    
+    
+    
+</dd>
+
+        
+            
+<dt>
+    
+    <h4 class="name" id="define"><span class="type-signature">&lt;static> </span>define<span class="signature">(proto)</span><span class="type-signature"></span></h4>
+    
+    
+</dt>
+<dd>
+    
+    
+    <div class="description">
+        Define a new Tag Class and register it.
+
+<p>The proto parameter must have a 'tag' attribute that specifies the name of the
+   class to be used by Tags.create() to find this class for instantiation.
+   The proto.extend attribute indicates the class to
+   be extended (or none if not provided).</p>
+ 
+<p>Additional attributes of the 'proto' parameter will be added to the prototype
+   of the class being defined.</p>
+ 
+<p>Typical use of Tags.define() is to extend View to create a custom tag. Here
+   is a simple example of that.</p>
+
+<pre class='code'>
+
+ Tags.define({
+   tag: 'mytag',
+   extend: 'view',
+
+   renderText: function() {
+     if (this.message) this.content = this.message;
+     return this.renderAsDiv();
+   }
+ });
+</pre>
+    </div>
+    
+
+    
+    
+    
+    
+    
+        <h5>Parameters:</h5>
+        
+
+<table class="params">
+    <thead>
+	<tr>
+		
+		<th>Name</th>
+		
+		
+		<th>Type</th>
+		
+		
+		
+		
+		
+		<th class="last">Description</th>
+	</tr>
+	</thead>
+	
+	<tbody>
+	
+	
+        <tr>
+            
+                <td class="name"><code>proto</code></td>
+            
+            
+            <td class="type">
+            
+                
+<span class="param-type">Object</span>
+
+
+            
+            </td>
+            
+            
+            
+            
+            
+            <td class="description last">The config object that contains the tag name of the Tag class being defined and additional prototype information for the class.</td>
+        </tr>
+	
+	
+	</tbody>
+</table>
+    
+    
+    
+<dl class="details">
+    
+        
+    
+    
+    
+
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="tags.js.html">tags.js</a>, <a href="tags.js.html#line126">line 126</a>
+    </li></ul></dd>
+    
+    
+    
+    
+    
+    
+    
+</dl>
+
+    
+    
+
+    
+
+    
+    
+    
+    
+    
+    
+    
+</dd>
+
+        
+            
+<dt>
+    
+    <h4 class="name" id="findTag"><span class="type-signature">&lt;static> </span>findTag<span class="signature">(id)</span><span class="type-signature"> &rarr; {Object}</span></h4>
+    
+    
+</dt>
+<dd>
+    
+    
+    <div class="description">
+        Find a Tag object by its id attribute.
+
+<p>This is used primarily by the View class. The view.activate() method
+   automatically adds unique view.id attributes and saves the corresponding
+   Tag object to be found by this method.</p>
+    </div>
+    
+
+    
+    
+    
+    
+    
+        <h5>Parameters:</h5>
+        
+
+<table class="params">
+    <thead>
+	<tr>
+		
+		<th>Name</th>
+		
+		
+		<th>Type</th>
+		
+		
+		
+		
+		
+		<th class="last">Description</th>
+	</tr>
+	</thead>
+	
+	<tbody>
+	
+	
+        <tr>
+            
+                <td class="name"><code>id</code></td>
+            
+            
+            <td class="type">
+            
+                
+<span class="param-type">string</span>
+
+
+            
+            </td>
+            
+            
+            
+            
+            
+            <td class="description last">The id of the Tag object to be found</td>
+        </tr>
+	
+	
+	</tbody>
+</table>
+    
+    
+    
+<dl class="details">
+    
+        
+    
+    
+    
+
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="tags.js.html">tags.js</a>, <a href="tags.js.html#line164">line 164</a>
+    </li></ul></dd>
+    
+    
+    
+    
+    
+    
+    
+</dl>
+
+    
+    
+
+    
+
+    
+    
+    
+    
+    
+    <h5>Returns:</h5>
+    
+            
+<div class="param-desc">
+    the Tag object associated with the id
+</div>
+
+
+
+<dl>
+	<dt>
+		Type
+	</dt>
+	<dd>
+		
+<span class="param-type">Object</span>
+
+
+	</dd>
+</dl>
+
+        
+    
+    
+</dd>
+
+        
+            
+<dt>
+    
+    <h4 class="name" id="isTag"><span class="type-signature">&lt;static> </span>isTag<span class="signature">(val, <span class="optional">tagName</span>)</span><span class="type-signature"></span></h4>
+    
+    
+</dt>
+<dd>
+    
+    
+    <div class="description">
+        Convenience function for determining if a value is a Tag, possibly of a specified type.
+
+ Use this to select just the Tag objects or Tag objects of a specific type, from an array 
+ of content.
+    </div>
+    
+
+    
+    
+    
+    
+    
+        <h5>Parameters:</h5>
+        
+
+<table class="params">
+    <thead>
+	<tr>
+		
+		<th>Name</th>
+		
+		
+		<th>Type</th>
+		
+		
+		<th>Argument</th>
+		
+		
+		
+		
+		<th class="last">Description</th>
+	</tr>
+	</thead>
+	
+	<tbody>
+	
+	
+        <tr>
+            
+                <td class="name"><code>val</code></td>
+            
+            
+            <td class="type">
+            
+                
+<span class="param-type">any</span>
+
+
+            
+            </td>
+            
+            
+                <td class="attributes">
+                
+                    
+                
+                    
+                
+                </td>
+            
+            
+            
+            
+            <td class="description last">The value to be tested</td>
+        </tr>
+	
+	
+	
+        <tr>
+            
+                <td class="name"><code>tagName</code></td>
+            
+            
+            <td class="type">
+            
+                
+<span class="param-type">string</span>
+
+
+            
+            </td>
+            
+            
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+                    
+                
+                    
+                
+                </td>
+            
+            
+            
+            
+            <td class="description last">The value candidate 'tag' attribute must match</td>
+        </tr>
+	
+	
+	</tbody>
+</table>
+    
+    
+    
+<dl class="details">
+    
+        
+    
+    
+    
+
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="tags.js.html">tags.js</a>, <a href="tags.js.html#line144">line 144</a>
+    </li></ul></dd>
+    
+    
+    
+    
+    
+    
+    
+</dl>
+
+    
+    
+
+    
+
+    
+    
+    
+    
+    
+    
+    
+</dd>
+
+        </dl>
+    
+    
+    
+    
+    
+</article>
+
+</section>  
+
+
+
+
+</div>
+
+<nav>
+    <h2><a href="index.html">Index</a></h2><h3>Links</h3><ul><li><a href="../introduction.html">Introduction</a></li><li><a href="https://github.com/matt-thompson/tags">GitHub</a></li></ul><h3>Modules</h3><ul><li><a href="module-boxlib.html">boxlib</a></li></ul><h3>Classes</h3><ul><li><a href="hbox.html">hbox</a></li><li><a href="slider.html">slider</a></li><li><a href="tab.html">tab</a></li><li><a href="tabs.html">tabs</a></li><li><a href="vbox.html">vbox</a></li><li><a href="View.html">View</a></li></ul><h3>Namespaces</h3><ul><li><a href="Tags.html">Tags</a></li></ul>
+</nav>
+
+<br clear="both">
+
+<footer>
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.2.0-dev</a> on Sat Nov 02 2013 11:24:38 GMT-0400 (EDT)
+</footer>
+
+<script> prettyPrint(); </script>
+<script src="scripts/linenumber.js"> </script>
+</body>
+</html>

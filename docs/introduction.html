@@ -12,13 +12,25 @@ pre {margin: 2px 4px 2px 8px; border:solid thin blue; padding:4px 4px 4px 8px; o
 </head>
 <body>
 <h1>Getting Started</h1>
-<p>Tags lets you implement custom tags in Javascript. This makes 
-   it easy to bind tags to event handlers, control static HTML, create and manipulate dynamic 
-   HTML and implement widgets with a clean HTML interface.</p>
 <p>This document describes the Tags framework at a conceptual level and describes
    how to use the features of the framework. See the 
    <a href='jsdocs/index.html'>API</a> document
    for programming details.</p>
+<h2>Concepts</h2>
+<p>HTML, which is more or less XML, provides a good paradigm for describing the 
+   structural and visual aspects of a Web application while 
+   Javascript, which is a pretty good OOP language is good at describing the semantics. 
+   What is missing, is a good way to tie the two components together.</p>
+<p>We would like to be able to use XML in a more general way to describe program components
+   and then automatically link these components to Javascript code that can provide the
+   implementation details to render and activate these generalized components.</p>
+<p>The Tags framework does this by providing a way to extend HTML with custom tags backed up with Javascript.
+   The XML tag name selects an implementing Javascript Class. XML attributes map to Javascript object
+   attributes. Nested XML content, which can be standard HTML or other custom tags,
+   is represented in the implementing Javascript object instance as the 'content' array attribute.</p>
+<p>The Tags framework lets the programmer structure the application as if HTML implemented
+   what ever tags he finds convenient and then use Javascript to make it so.</p>
+   
 <h2>Handling Objects</h2>
 <p>Tags provides a Class mechanism to define Tag object types using the define() method
    and instantiate Tag objects using the create() method. 
@@ -29,7 +41,9 @@ pre {margin: 2px 4px 2px 8px; border:solid thin blue; padding:4px 4px 4px 8px; o
    
 <p>The create() method takes a single input parameter which specifies an XML or Javascript
    structure which is to be turned into a Tag object. XML can be provided as an XML-Node
-   object or as a string that starts with a '&lt;' character. The create() method
+   object or as a string that starts with a '&lt;' character. It is the 'tag' attribute
+   of the XML or Javascript object literal which selects the Javascript Class to be
+   used to instantiate the object. The create() method
    operates recursively on nested XML content or, in the case of Javascript, nested
    content provided in the 'content' attribute.</p>
    
@@ -99,8 +113,10 @@ pre {margin: 2px 4px 2px 8px; border:solid thin blue; padding:4px 4px 4px 8px; o
 </ul>       
 
 <p>What makes the View class useful is that any unrecognized tag name is bound to the View Class
-   and this lets you create View structures that represent arbitrary HTML and can be used
-   to render and manipulate HTML DOM objects.</p> 
+   which knows how to render standard HTML tags.
+   This lets you create View structures that represent arbitrary HTML and can be used
+   to render and manipulate HTML DOM objects. It means that custom tags can contain
+   standard HTML as content and vice versa.</p> 
 
 <p>Using a View object requires a sequence of operations that includes instantiate,
    render, attach to the DOM and activate. Here is how that would work for
@@ -171,7 +187,7 @@ Tags.define({
    to bind it to an event handler.  You could do this easily with jQuery, but there 
    is nothing in the &lt;input&gt; tag itself to indicate this. 
    And you need a way for jQuery to find the &lt;input&gt; tab. And the code to
-   attach the event handler has to to somewhere. And you have to make sure it gets called.
+   attach the event handler has to go somewhere. And you have to make sure it gets called.
    So there are lots of 
    things that can go wrong with a simple operation.</p>
 

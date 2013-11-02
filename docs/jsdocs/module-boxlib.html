@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>JSDoc: Module: boxlib</title>
+    
+    <script src="scripts/prettify/prettify.js"> </script>
+    <script src="scripts/prettify/lang-css.js"> </script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link type="text/css" rel="stylesheet" href="styles/prettify-tomorrow.css">
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc-default.css">
+</head>
+
+<body>
+
+<div id="main">
+    
+    <h1 class="page-title">Module: boxlib</h1>
+    
+    
+
+
+
+<section>
+    
+<header>
+    <h2>
+    
+    </h2>
+    
+</header>  
+
+<article>
+    <div class="container-overview">
+    
+    
+        
+            <div class="description">Implement a set of Widgets that provide layout capabilities.<p>Implement widgets which   provide the ability to layout and resize components horizontally.   and vertically.</p><ul> <li><a href='hbox.html'>&lt;hbox&gt;</a> - Layout components horizontally.</li> <li><a href='vbox.html'>&lt;vbox&gt;</a> - Layout components vertically.</li> <li><a href='slider.html'>&lt;slider&gt;</a> - Resize an adjacent component.</li> <li><a href='tabs.html'>&lt;tabs&gt;</a> - Provide a container for tabs.</li> <li><a href='tab.html'>&lt;tab&gt;</a> - Labels and holds HTML for a tab.</li></ul><p>These widgets all inherit from <a href="View.html">View</a>.</p><p>Widgets defined here can be used like standard HTML tags from   within &lt;style&gt; tags with type of 'text/custom-tags'. They   may also be used with standard View API from Javascript.</p>
+<h3>Example</h3>
+<caption>This demonstrates all of the boxlib Widgets (<a href='../examples/holy-grail.html'>Holy Grail Example</a>)</caption>
+<pre style='border:solid thin green; overflow:auto; height:500px; padding:3px 4px; background:#efe;'>
+&lt;!doctype html&gt;
+&lt;html&gt;
+&lt;head&gt;
+  &lt;meta http-equiv="Content-Type" content="text/html; charset=UTF-8" /&gt;
+  &lt;title&gt;The Holy Grail of Layouts: Tags Version&lt;/title&gt;
+  &lt;link rel="stylesheet" href="css/boxlib.css"&gt;
+  &lt;script src="../../bower_components/jquery/jquery.js"&gt;&lt;/script&gt;
+  &lt;script src="../../bower_components/log4javascript/log4javascript.js"&gt;&lt;/script&gt;
+  &lt;script&gt;
+//    var log = log4javascript.getDefaultLogger();
+    log = {debug: function(x) {}};
+    log.debug("DEBUG - Enabled");
+  &lt;/script&gt;
+  &lt;script src="../../js/tags.js"&gt;&lt;/script&gt;
+  &lt;script src="../../js/boxlib.js"&gt;&lt;/script&gt;
+  &lt;style type="text/css"&gt;
+    html {margin:0; width:100%; height:100%;}
+    body {margin:0; width:100%; height:100%; overflow:hidden; background-color: #eee;}
+
+    #header, #footer {font-size: large; text-align:center; background-color: #999;}
+    #left {padding: 0 8px; text-align: justify; background-color: #66F; margin:0;}
+    #center {text-align: justify; background-color:#eee; margin:0;}
+    #center p {padding:0 8px;}
+    #right {padding: 0 8px; text-align: justify; background-color: #F66; margin:0;}
+
+    .tags-tab-container {height:2.0rem;}
+    .tags-tab-button {border:solid thin #222; background-color:#ddd; color:#222;}
+    .tags-tab-button.selected {border-bottom: solid thin #eee; background-color:#eee;}
+    .tags-tab-spacer {border-bottom:solid thin #222;}
+    .tags-tab-choice {background-color:#eee;}
+
+  &lt;/style&gt;
+&lt;/head&gt;
+
+&lt;body style='overflow:auto;'&gt;
+
+  &lt;script type='text/custom-tags'&gt;
+    &lt;vbox style='left:0; right:0;'&gt;
+      &lt;div layout='fixed' id="header" style='padding:20px 0px; left:0; right:0;'&gt;This is the header.&lt;/div&gt;
+      
+      &lt;hbox layout='extend' style='margin:0; padding:0; width:100%; padding:0; margin:0'&gt;
+        &lt;div layout='fixed' id="left" style='width:180px; overflow:auto;'&gt; 
+          &lt;h2&gt;This is the left sidebar.&lt;/h2&gt;
+          &lt;p&gt;Lorem ipsum dolor sit amet, consectetuer adipiscing elit, sed diam nonummy nibh euismod tincidunt ut laoreet dolore magna aliquam erat volutpat. Ut wisi enim ad minim veniam, quis nostrud exerci tation ullamcorper suscipit lobortis nisl ut aliquip ex ea commodo consequat. Duis autem vel eum iriure dolor in hendrerit in vulputate velit esse molestie consequat, vel illum dolore eu feugiat nulla facilisis at vero eros et accumsan et iusto odio dignissim qui blandit praesent luptatum zzril delenit augue duis dolore te feugait nulla.&lt;/p&gt;
+        &lt;/div&gt;
+        
+        &lt;slider/&gt;
+      
+        &lt;div layout='flex' style='overflow:auto;'  id="center"&gt;
+          &lt;h1&gt;This is the main content.&lt;/h1&gt;
+          &lt;tabs&gt;
+            &lt;tab label='Lorem'&gt;
+              &lt;p&gt;Lorem ipsum dolor sit amet, consectetuer adipiscing elit, sed diam nonummy nibh euismod tincidunt ut laoreet dolore magna aliquam erat volutpat. Ut wisi enim ad minim veniam, quis nostrud exerci tation ullamcorper suscipit lobortis nisl ut aliquip ex ea commodo consequat. Duis autem vel eum iriure dolor in hendrerit in vulputate velit esse molestie consequat, vel illum dolore eu feugiat nulla facilisis at vero eros et accumsan et iusto odio dignissim qui blandit praesent luptatum zzril delenit augue duis dolore te feugait nulla.&lt;/p&gt;
+            &lt;/tab&gt;
+            &lt;tab label='Ipsum'&gt;
+              &lt;p&gt;Ipsum dolor sit amet, consectetuer adipiscing elit, sed diam nonummy nibh euismod tincidunt ut laoreet dolore magna aliquam erat volutpat. Ut wisi enim ad minim veniam, quis nostrud exerci tation ullamcorper suscipit lobortis nisl ut aliquip ex ea commodo consequat. Duis autem vel eum iriure dolor in hendrerit in vulputate velit esse molestie consequat, vel illum dolore eu feugiat nulla facilisis at vero eros et accumsan et iusto odio dignissim qui blandit praesent luptatum zzril delenit augue duis dolore te feugait nulla.&lt;/p&gt;
+            &lt;/tab&gt;
+            &lt;tab label='Dolor'&gt;
+              &lt;p&gt;Dolor sit amet, consectetuer adipiscing elit, sed diam nonummy nibh euismod tincidunt ut laoreet dolore magna aliquam erat volutpat. Ut wisi enim ad minim veniam, quis nostrud exerci tation ullamcorper suscipit lobortis nisl ut aliquip ex ea commodo consequat. Duis autem vel eum iriure dolor in hendrerit in vulputate velit esse molestie consequat, vel illum dolore eu feugiat nulla facilisis at vero eros et accumsan et iusto odio dignissim qui blandit praesent luptatum zzril delenit augue duis dolore te feugait nulla.&lt;/p&gt;
+            &lt;/tab&gt;
+            &lt;tab label='Consectetuer'&gt;
+              &lt;p&gt;Consectetuer adipiscing elit, sed diam nonummy nibh euismod tincidunt ut laoreet dolore magna aliquam erat volutpat. Ut wisi enim ad minim veniam, quis nostrud exerci tation ullamcorper suscipit lobortis nisl ut aliquip ex ea commodo consequat. Duis autem vel eum iriure dolor in hendrerit in vulputate velit esse molestie consequat, vel illum dolore eu feugiat nulla facilisis at vero eros et accumsan et iusto odio dignissim qui blandit praesent luptatum zzril delenit augue duis dolore te feugait nulla.&lt;/p&gt;
+            &lt;/tab&gt;
+          &lt;/tabs&gt;
+        &lt;/div&gt;
+      
+        &lt;slider/&gt;
+      
+        &lt;div layout='fixed' style='width:140px; overflow:auto;' id="right"&gt;
+          &lt;h2&gt;This is the right sidebar.&lt;/h2&gt;
+          &lt;p&gt;Lorem ipsum dolor sit amet, consectetuer adipiscing elit, sed diam nonummy nibh euismod tincidunt ut laoreet dolore magna aliquam erat volutpat. Ut wisi enim ad minim veniam, quis nostrud exerci tation ullamcorper suscipit lobortis nisl ut aliquip ex ea commodo consequat. Duis autem vel eum iriure dolor in hendrerit in vulputate velit esse molestie consequat, vel illum dolore eu feugiat nulla facilisis at vero eros et accumsan et iusto odio dignissim qui blandit praesent luptatum zzril delenit augue duis dolore te feugait nulla.&lt;/p&gt;
+        &lt;/div&gt;
+      &lt;/hbox&gt;
+        
+      &lt;div layout='fixed' id="footer" style='width:100%; padding:10px 0px;'&gt;This is the footer.&lt;/div&gt;
+    &lt;/vbox&gt;
+    
+  &lt;/script&gt;
+&lt;/body&gt;
+
+&lt;/html&gt;
+</pre></div>
+        
+        
+        
+<dl class="details">
+    
+        
+    
+    
+    
+
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="boxlib.js.html">boxlib.js</a>, <a href="boxlib.js.html#line10">line 10</a>
+    </li></ul></dd>
+    
+    
+    
+    
+    
+    
+    
+</dl>
+
+        
+        
+    
+    </div>
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+</article>
+
+</section>  
+
+
+
+
+</div>
+
+<nav>
+    <h2><a href="index.html">Index</a></h2><h3>Links</h3><ul><li><a href="../introduction.html">Introduction</a></li><li><a href="https://github.com/matt-thompson/tags">GitHub</a></li></ul><h3>Modules</h3><ul><li><a href="module-boxlib.html">boxlib</a></li></ul><h3>Classes</h3><ul><li><a href="hbox.html">hbox</a></li><li><a href="slider.html">slider</a></li><li><a href="tab.html">tab</a></li><li><a href="tabs.html">tabs</a></li><li><a href="vbox.html">vbox</a></li><li><a href="View.html">View</a></li></ul><h3>Namespaces</h3><ul><li><a href="Tags.html">Tags</a></li></ul>
+</nav>
+
+<br clear="both">
+
+<footer>
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.2.0-dev</a> on Sat Nov 02 2013 11:24:37 GMT-0400 (EDT)
+</footer>
+
+<script> prettyPrint(); </script>
+<script src="scripts/linenumber.js"> </script>
+</body>
+</html>

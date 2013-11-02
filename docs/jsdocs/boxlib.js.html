@@ -1,4 +1,31 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>JSDoc: Source: boxlib.js</title>
+    
+    <script src="scripts/prettify/prettify.js"> </script>
+    <script src="scripts/prettify/lang-css.js"> </script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link type="text/css" rel="stylesheet" href="styles/prettify-tomorrow.css">
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc-default.css">
+</head>
 
+<body>
+
+<div id="main">
+    
+    <h1 class="page-title">Source: boxlib.js</h1>
+    
+    
+
+
+    
+    <section>
+        <article>
+            <pre class="prettyprint source"><code>
 var log = log || {debug:function() {}};
 
 //(function($) {
@@ -8,27 +35,27 @@ var parseCssInt = function(el,key) {
 };
 
 /** Implement a set of Widgets that provide layout capabilities.
- * <p>Implement widgets which
+ * &lt;p>Implement widgets which
  *    provide the ability to layout and resize components horizontally.
- *    and vertically.</p>
- * <ul>
- *  <li><a href='hbox.html'>&lt;hbox&gt;</a> - Layout components horizontally.</li>
- *  <li><a href='vbox.html'>&lt;vbox&gt;</a> - Layout components vertically.</li>
- *  <li><a href='slider.html'>&lt;slider&gt;</a> - Resize an adjacent component.</li>
- *  <li><a href='tabs.html'>&lt;tabs&gt;</a> - Provide a container for tabs.</li>
- *  <li><a href='tab.html'>&lt;tab&gt;</a> - Labels and holds HTML for a tab.</li>
- * </ul>
+ *    and vertically.&lt;/p>
+ * &lt;ul>
+ *  &lt;li>&lt;a href='hbox.html'>&lt;hbox&gt;&lt;/a> - Layout components horizontally.&lt;/li>
+ *  &lt;li>&lt;a href='vbox.html'>&lt;vbox&gt;&lt;/a> - Layout components vertically.&lt;/li>
+ *  &lt;li>&lt;a href='slider.html'>&lt;slider&gt;&lt;/a> - Resize an adjacent component.&lt;/li>
+ *  &lt;li>&lt;a href='tabs.html'>&lt;tabs&gt;&lt;/a> - Provide a container for tabs.&lt;/li>
+ *  &lt;li>&lt;a href='tab.html'>&lt;tab&gt;&lt;/a> - Labels and holds HTML for a tab.&lt;/li>
+ * &lt;/ul>
  *
- * <p>These widgets all inherit from {@link View}.</p>
+ * &lt;p>These widgets all inherit from {@link View}.&lt;/p>
  *
- * <p>Widgets defined here can be used like standard HTML tags from
+ * &lt;p>Widgets defined here can be used like standard HTML tags from
  *    within &lt;style&gt; tags with type of 'text/custom-tags'. They
- *    may also be used with standard View API from Javascript.</p>
+ *    may also be used with standard View API from Javascript.&lt;/p>
  *
  * 
-<h3>Example</h3>
-<caption>This demonstrates all of the boxlib Widgets (<a href='../examples/holy-grail.html'>Holy Grail Example</a>)</caption>
-<pre style='border:solid thin green; overflow:auto; height:500px; padding:3px 4px; background:#efe;'>
+&lt;h3>Example&lt;/h3>
+&lt;caption>This demonstrates all of the boxlib Widgets (&lt;a href='../examples/holy-grail.html'>Holy Grail Example&lt;/a>)&lt;/caption>
+&lt;pre style='border:solid thin green; overflow:auto; height:500px; padding:3px 4px; background:#efe;'>
 &lt;!doctype html&gt;
 &lt;html&gt;
 &lt;head&gt;
@@ -110,7 +137,7 @@ var parseCssInt = function(el,key) {
 &lt;/body&gt;
 
 &lt;/html&gt;
-</pre>
+&lt;/pre>
  
  * @module
  * @name boxlib
@@ -137,26 +164,26 @@ var parseCssInt = function(el,key) {
   /**
    * Define a Widget that makes the component next to it Resizeable.
    *
-   * <p>Use Tags.create() to instantiate this class from Javascript or use the &lt;slider&gt; tag to instantiate it as static HTML.</p>
+   * &lt;p>Use Tags.create() to instantiate this class from Javascript or use the &lt;slider&gt; tag to instantiate it as static HTML.&lt;/p>
    *
-   * <p>A &lt;slider&gt; goes between two components in a &lt;hbox&gt; or &lt;vbox&gt; to
+   * &lt;p>A &lt;slider&gt; goes between two components in a &lt;hbox&gt; or &lt;vbox&gt; to
    *    to resize one of the adjacent FIXED size boxes and (if present) the FLEX box.
    *    If the &lt;slider&gt; is placed between two FIXED size boxes, it will resize
    *    the one farthest away from the FLEX box, or the one on the left if there is
    *    no FLEX box present. 
-   * </p>
+   * &lt;/p>
    *
-   * <p>This class extends {@link View} - refer to the {@link View} class for inherited methods - including:</p>
-   * <ul>
-   *  <li>render() - render HTML and return jQuery DOM object (see {@link View#render})</li>
-	 *  <li>activate() - do post-DOM attachment processing (see {@link View#activate})</li>
-	 *  <li>renderText() - render HTML and return HTML text as string (see {@link View#renderText})</li>
-	 *  <li>renderAs(tagName) - render HTML as if it were the indicated tag (see {@link View#renderAs})</li>
-	 *  <li>addContent(contentToAdd) - add content prior to rendering (see {@link View#addContent})</li>
-	 *  <li>hasClass(theClass) - check to see if the class is present (see {@link View#hasClass})</li>
-	 *  <li>addClass(theClass) - add class or classes (see {@link View#addClass})</li>
-	 *  <li>removeClass(theClass) - remove class or classes (see {@link View#remove})</li>
-   * </ul>
+   * &lt;p>This class extends {@link View} - refer to the {@link View} class for inherited methods - including:&lt;/p>
+   * &lt;ul>
+   *  &lt;li>render() - render HTML and return jQuery DOM object (see {@link View#render})&lt;/li>
+	 *  &lt;li>activate() - do post-DOM attachment processing (see {@link View#activate})&lt;/li>
+	 *  &lt;li>renderText() - render HTML and return HTML text as string (see {@link View#renderText})&lt;/li>
+	 *  &lt;li>renderAs(tagName) - render HTML as if it were the indicated tag (see {@link View#renderAs})&lt;/li>
+	 *  &lt;li>addContent(contentToAdd) - add content prior to rendering (see {@link View#addContent})&lt;/li>
+	 *  &lt;li>hasClass(theClass) - check to see if the class is present (see {@link View#hasClass})&lt;/li>
+	 *  &lt;li>addClass(theClass) - add class or classes (see {@link View#addClass})&lt;/li>
+	 *  &lt;li>removeClass(theClass) - remove class or classes (see {@link View#remove})&lt;/li>
+   * &lt;/ul>
    *
    * @class
    * @name slider
@@ -264,52 +291,52 @@ var parseCssInt = function(el,key) {
   /**
    * Define an &lt;hbox&gt; Widget that implements a container that lays out its content horizontally, left to right.
    *
-   * <p>Use Tags.create() to instantiate this class from Javascript or use the &lt;hbox&gt; tag to instantiate it as static HTML.</p>
+   * &lt;p>Use Tags.create() to instantiate this class from Javascript or use the &lt;hbox&gt; tag to instantiate it as static HTML.&lt;/p>
    *
-   * <p>The &lt;hbox&gt; Widget should contain fixed size components and (optionally) one
+   * &lt;p>The &lt;hbox&gt; Widget should contain fixed size components and (optionally) one
    *    component that is designated the FLEX component whose size is unspecified. If a FLEX component
-   *    is included, it will be expanded to fill all available space not occupied by the fixed components.</p>
+   *    is included, it will be expanded to fill all available space not occupied by the fixed components.&lt;/p>
    *  
-   * <p>The role of contained components as FIXED or FLEX is indicated by the 'layout' attribute of
-   *    contained component.</p>
-   *  <ul>
-   *   <li><span>layout='fixed'</span>
-   *     <p>This is a FIXED component. Its size is determined by CSS or by
+   * &lt;p>The role of contained components as FIXED or FLEX is indicated by the 'layout' attribute of
+   *    contained component.&lt;/p>
+   *  &lt;ul>
+   *   &lt;li>&lt;span>layout='fixed'&lt;/span>
+   *     &lt;p>This is a FIXED component. Its size is determined by CSS or by
    *        the component's natural size. Do not use percentage widths as they
-   *        will not properly scale as the window is resized.</p>
-   *   </li>
-   *   <li><span>layout='wrap'</span>
-   *     <p>This is a FIXED component. The horizontal size is determined by CSS
+   *        will not properly scale as the window is resized.&lt;/p>
+   *   &lt;/li>
+   *   &lt;li>&lt;span>layout='wrap'&lt;/span>
+   *     &lt;p>This is a FIXED component. The horizontal size is determined by CSS
    *        or by the natural size like layout='fixed', but the vertical size
    *        is adjusted to the smallest size that will enclose any contained
-   *        components.</p>
-   *   </li>
-   *   <li><span>layout='extend'</span>
-   *     <p>This is a FIXED component that works like layout='wrap' except that
+   *        components.&lt;/p>
+   *   &lt;/li>
+   *   &lt;li>&lt;span>layout='extend'&lt;/span>
+   *     &lt;p>This is a FIXED component that works like layout='wrap' except that
    *        all of the extended components child components will be extended
-   *        vertically to the size of the largest child component.</p>
-   *   </li>
-   *   <li><span>layout='flex'</span>
-   *     <p>This is a FLEX component. It will be expanded horizonally to
-   *        fill all space not consumed by the FIXED child components.</p>
-   *   </li>
-   *  </ul>
+   *        vertically to the size of the largest child component.&lt;/p>
+   *   &lt;/li>
+   *   &lt;li>&lt;span>layout='flex'&lt;/span>
+   *     &lt;p>This is a FLEX component. It will be expanded horizonally to
+   *        fill all space not consumed by the FIXED child components.&lt;/p>
+   *   &lt;/li>
+   *  &lt;/ul>
    *
-   * <p>In addition to the fixed size components and the one FLEX component for layout, the &lt;hbox&gt; Widget
+   * &lt;p>In addition to the fixed size components and the one FLEX component for layout, the &lt;hbox&gt; Widget
    *    may also contain a &lt;slider&gt; component between any two of its layout components. These have the effect
-   *    of adjusting the size of one of the fixed size components and the FLEX component.</p>
+   *    of adjusting the size of one of the fixed size components and the FLEX component.&lt;/p>
    *
-   * <p>This class extends {@link View} - refer to the {@link View} class for inherited methods - including:</p>
-   * <ul>
-   *  <li>render() - render HTML and return jQuery DOM object (see {@link View#render})</li>
-	 *  <li>activate() - do post-DOM attachment processing (see {@link View#activate})</li>
-	 *  <li>renderText() - render HTML and return HTML text as string (see {@link View#renderText})</li>
-	 *  <li>renderAs(tagName) - render HTML as if it were the indicated tag (see {@link View#renderAs})</li>
-	 *  <li>addContent(contentToAdd) - add content prior to rendering (see {@link View#addContent})</li>
-	 *  <li>hasClass(theClass) - check to see if the class is present (see {@link View#hasClass})</li>
-	 *  <li>addClass(theClass) - add class or classes (see {@link View#addClass})</li>
-	 *  <li>removeClass(theClass) - remove class or classes (see {@link View#remove})</li>
-   * </ul>
+   * &lt;p>This class extends {@link View} - refer to the {@link View} class for inherited methods - including:&lt;/p>
+   * &lt;ul>
+   *  &lt;li>render() - render HTML and return jQuery DOM object (see {@link View#render})&lt;/li>
+	 *  &lt;li>activate() - do post-DOM attachment processing (see {@link View#activate})&lt;/li>
+	 *  &lt;li>renderText() - render HTML and return HTML text as string (see {@link View#renderText})&lt;/li>
+	 *  &lt;li>renderAs(tagName) - render HTML as if it were the indicated tag (see {@link View#renderAs})&lt;/li>
+	 *  &lt;li>addContent(contentToAdd) - add content prior to rendering (see {@link View#addContent})&lt;/li>
+	 *  &lt;li>hasClass(theClass) - check to see if the class is present (see {@link View#hasClass})&lt;/li>
+	 *  &lt;li>addClass(theClass) - add class or classes (see {@link View#addClass})&lt;/li>
+	 *  &lt;li>removeClass(theClass) - remove class or classes (see {@link View#remove})&lt;/li>
+   * &lt;/ul>
    *
    * @class
    * @name hbox
@@ -330,7 +357,7 @@ var parseCssInt = function(el,key) {
       var gap = parseInt(this.gap) || 0;
       var content = this.content || [];
       var cumulativeWidth = 0;
-      for (var n=0; n<content.length; n++) {
+      for (var n=0; n&lt;content.length; n++) {
         var item = content[n];
         if (!Tags.isTag(item)) continue;
         var itemTag = item.tag.toUpperCase();
@@ -340,7 +367,7 @@ var parseCssInt = function(el,key) {
         cumulativeWidth += gap;
         if (itemLayout == 'flex') {
           var minWidth = parseCssInt(item.$el,'min-width') || 0;
-          if (minWidth < 10) minWidth = 10;
+          if (minWidth &lt; 10) minWidth = 10;
           cumulativeWidth += minWidth;
         } else {
           cumulativeWidth += item.$el.outerWidth(true);
@@ -351,7 +378,7 @@ var parseCssInt = function(el,key) {
     
 //    renderText: function() {
 //      var content = this.content || [];
-//      for (var n=0; n<content.length; n++) {
+//      for (var n=0; n&lt;content.length; n++) {
 //        var item = content[n];
 //        if (typeof item != 'object' || !item.tag) continue;
 //        if (item.wrap) {
@@ -377,7 +404,7 @@ var parseCssInt = function(el,key) {
       // we hit the FLEX item again. If we never hit a FLEX item, just stop when we
       // get to the end.
       log.debug("HBOX id="+this.id+" LAYOUT="+(this.layout||'NONE'));
-      for (var n=0; n>=0 && n<content.length; n+=delta) {
+      for (var n=0; n>=0 && n&lt;content.length; n+=delta) {
         var item = content[n];
         if (!Tags.isTag(item)) continue;
         var itemTag = item.tag.toUpperCase();
@@ -395,7 +422,7 @@ var parseCssInt = function(el,key) {
           var itemContent = item.content || [];
           if (!$.isArray(itemContent)) itemContent = [itemContent];
           var myWidth = 0;
-          for (var m=0; m<itemContent.length; m++) {
+          for (var m=0; m&lt;itemContent.length; m++) {
             var child = itemContent[m];
             if (!Tags.isTag(child) || child.layout == 'free') continue;
             log.debug("HBOX child HT="+child.outerHeight(true));
@@ -411,7 +438,7 @@ var parseCssInt = function(el,key) {
             delta = -1;
             lastItem = null;
             var minWidth = parseCssInt(item.$el,'min-width');
-            if (minWidth < 10) minWidth = 10;
+            if (minWidth &lt; 10) minWidth = 10;
             cumulativeWidth += minWidth;
 //            if (cumulativeWidth > maxWidth) return false;
             continue;  // Continue from the right
@@ -464,52 +491,52 @@ var parseCssInt = function(el,key) {
   /**
    * Define a &lt;vbox&gt; Widget that implements a container that lays out its content vertically, top to bottom.
    *
-   * <p>Use Tags.create() to instantiate this class from Javascript or use the &lt;vbox&gt; tag to instantiate it as static HTML.</p>
+   * &lt;p>Use Tags.create() to instantiate this class from Javascript or use the &lt;vbox&gt; tag to instantiate it as static HTML.&lt;/p>
    *
-   * <p>The &lt;vbox&gt; Widget should contain fixed size components and (optionally) one
+   * &lt;p>The &lt;vbox&gt; Widget should contain fixed size components and (optionally) one
    *    component that is designated the FLEX component whose size is unspecified. If a FLEX component
-   *    is included, it will be expanded to fill all available space not occupied by the fixed components.</p>
+   *    is included, it will be expanded to fill all available space not occupied by the fixed components.&lt;/p>
    *
-   * <p>The role of contained components as FIXED or FLEX is indicated by the 'layout' attribute of
-   *    contained component.</p>
-   *  <ul>
-   *   <li><span>layout='fixed'</span>
-   *     <p>This is a FIXED component. Its size is determined by CSS or by
+   * &lt;p>The role of contained components as FIXED or FLEX is indicated by the 'layout' attribute of
+   *    contained component.&lt;/p>
+   *  &lt;ul>
+   *   &lt;li>&lt;span>layout='fixed'&lt;/span>
+   *     &lt;p>This is a FIXED component. Its size is determined by CSS or by
    *        the component's natural size. Do not use percentage heights as they
-   *        will not properly scale as the window is resized.</p>
-   *   </li>
-   *   <li><span>layout='wrap'</span>
-   *     <p>This is a FIXED component. The height is determined by CSS
+   *        will not properly scale as the window is resized.&lt;/p>
+   *   &lt;/li>
+   *   &lt;li>&lt;span>layout='wrap'&lt;/span>
+   *     &lt;p>This is a FIXED component. The height is determined by CSS
    *        or by the natural size like layout='fixed', but the width
    *        is adjusted to the smallest size that will enclose any contained
-   *        components.</p>
-   *   </li>
-   *   <li><span>layout='extend'</span>
-   *     <p>This is a FIXED component that works like layout='wrap' except that
+   *        components.&lt;/p>
+   *   &lt;/li>
+   *   &lt;li>&lt;span>layout='extend'&lt;/span>
+   *     &lt;p>This is a FIXED component that works like layout='wrap' except that
    *        all of the extended component's child components will be extended
-   *        horizontally to the width of the largest child component.</p>
-   *   </li>
-   *   <li><span>layout='flex'</span>
-   *     <p>This is a FLEX component. It will be expanded vertically to
-   *        fill all space not consumed by the FIXED child components.</p>
-   *   </li>
-   *  </ul>
+   *        horizontally to the width of the largest child component.&lt;/p>
+   *   &lt;/li>
+   *   &lt;li>&lt;span>layout='flex'&lt;/span>
+   *     &lt;p>This is a FLEX component. It will be expanded vertically to
+   *        fill all space not consumed by the FIXED child components.&lt;/p>
+   *   &lt;/li>
+   *  &lt;/ul>
    *
-   * <p>In addition to the fixed size components and the one FLEX component for layout, the &lt;hbox&gt; Widget
+   * &lt;p>In addition to the fixed size components and the one FLEX component for layout, the &lt;hbox&gt; Widget
    *    may also contain a &lt;slider&gt; component between any two of its layout components. These have the effect
-   *    of adjusting the size of one of the fixed size components and the FLEX component.</p>
+   *    of adjusting the size of one of the fixed size components and the FLEX component.&lt;/p>
    *
-   * <p>This class extends {@link View} - refer to the {@link View} class for inherited methods - including:</p>
-   * <ul>
-   *  <li>render() - render HTML and return jQuery DOM object (see {@link View#render})</li>
-	 *  <li>activate() - do post-DOM attachment processing (see {@link View#activate})</li>
-	 *  <li>renderText() - render HTML and return HTML text as string (see {@link View#renderText})</li>
-	 *  <li>renderAs(tagName) - render HTML as if it were the indicated tag (see {@link View#renderAs})</li>
-	 *  <li>addContent(contentToAdd) - add content prior to rendering (see {@link View#addContent})</li>
-	 *  <li>hasClass(theClass) - check to see if the class is present (see {@link View#hasClass})</li>
-	 *  <li>addClass(theClass) - add class or classes (see {@link View#addClass})</li>
-	 *  <li>removeClass(theClass) - remove class or classes (see {@link View#remove})</li>
-   * </ul>
+   * &lt;p>This class extends {@link View} - refer to the {@link View} class for inherited methods - including:&lt;/p>
+   * &lt;ul>
+   *  &lt;li>render() - render HTML and return jQuery DOM object (see {@link View#render})&lt;/li>
+	 *  &lt;li>activate() - do post-DOM attachment processing (see {@link View#activate})&lt;/li>
+	 *  &lt;li>renderText() - render HTML and return HTML text as string (see {@link View#renderText})&lt;/li>
+	 *  &lt;li>renderAs(tagName) - render HTML as if it were the indicated tag (see {@link View#renderAs})&lt;/li>
+	 *  &lt;li>addContent(contentToAdd) - add content prior to rendering (see {@link View#addContent})&lt;/li>
+	 *  &lt;li>hasClass(theClass) - check to see if the class is present (see {@link View#hasClass})&lt;/li>
+	 *  &lt;li>addClass(theClass) - add class or classes (see {@link View#addClass})&lt;/li>
+	 *  &lt;li>removeClass(theClass) - remove class or classes (see {@link View#remove})&lt;/li>
+   * &lt;/ul>
    *
    * @class
    * @name vbox
@@ -528,7 +555,7 @@ var parseCssInt = function(el,key) {
       var cumulativeHeight = 0;
       var gap = parseInt(this.gap) || 0;
       var content = this.content || [];
-      for (var n=0; n<content.length; n++) {
+      for (var n=0; n&lt;content.length; n++) {
         var item = content[n];
         if (!Tags.isTag(item)) continue;
         var itemTag = item.tag.toUpperCase();
@@ -538,7 +565,7 @@ var parseCssInt = function(el,key) {
         cumulativeHeight += gap;
         if (itemLayout == 'expand') {
           var minHeight = parseCssInt(item.$el,'min-height');
-          if (minHeight < 10) minHeight = 10;
+          if (minHeight &lt; 10) minHeight = 10;
           cumulativeHeight += minHeight;
         } else {
           cumulativeHeight += item.$el.outerHeight(true);
@@ -559,7 +586,7 @@ var parseCssInt = function(el,key) {
 //      var maxHeight = this.$el.outerHeight(true);
       log.debug("VBOX id="+(this.id || "NONE")+" layout="+(this.layout || "NONE")+" content.len="+content.length);
       var delta = 1;
-      for (var n=0; n<content.length; n+=delta) {
+      for (var n=0; n&lt;content.length; n+=delta) {
         var item = content[n];
 //        log.debug("VBOX["+n+"] isTag="+Tags.isTag(item));
         if (!Tags.isTag(item)) continue;
@@ -578,7 +605,7 @@ var parseCssInt = function(el,key) {
           var itemContent = item.content || [];
           if (!$.isArray(itemContent)) itemContent = [itemContent];
           var myHeight = 0;
-          for (var m=0; m<itemContent.length; m++) {
+          for (var m=0; m&lt;itemContent.length; m++) {
             var child = itemContent[m];
             if (!Tags.isTag(child) || child.layout == 'free') continue;
             var childHeight = parseCssInt(child.$el,'top') + child.$el.outerHeight(true);
@@ -587,7 +614,7 @@ var parseCssInt = function(el,key) {
           }
           item.$el.height(myHeight); // assume no border, padding, margin (BPM)
           if (itemLayout == 'extend') {
-            for (var m=0; m<itemContent.length; m++) {
+            for (var m=0; m&lt;itemContent.length; m++) {
               var child = itemContent[m];
               if (!Tags.isTag(child) || child.layout == 'free') continue;
               child.$el.height(myHeight);
@@ -600,7 +627,7 @@ var parseCssInt = function(el,key) {
             delta = -1;
             lastItem = null;
             var minHeight = parseCssInt(item.$el,'min-height');
-            if (minHeight < 10) minHeight = 10;
+            if (minHeight &lt; 10) minHeight = 10;
             cumulativeHeight += minHeight;
 //          if (cumulativeHeight > maxHeight) return false;
           } else {
@@ -647,19 +674,19 @@ var parseCssInt = function(el,key) {
   
   /** Provide a container for &lt;tab&gt; components.
    *
-   * <p>Use Tags.create() to instantiate this class from Javascript or use the &lt;tabs&gt; tag to instantiate it as static HTML.</p>
+   * &lt;p>Use Tags.create() to instantiate this class from Javascript or use the &lt;tabs&gt; tag to instantiate it as static HTML.&lt;/p>
    *
-   * <p>This class extends {@link View} - refer to the {@link View} class for inherited methods - including:</p>
-   * <ul>
-   *  <li>render() - render HTML and return jQuery DOM object (see {@link View#render})</li>
-	 *  <li>activate() - do post-DOM attachment processing (see {@link View#activate})</li>
-	 *  <li>renderText() - render HTML and return HTML text as string (see {@link View#renderText})</li>
-	 *  <li>renderAs(tagName) - render HTML as if it were the indicated tag (see {@link View#renderAs})</li>
-	 *  <li>addContent(contentToAdd) - add content prior to rendering (see {@link View#addContent})</li>
-	 *  <li>hasClass(theClass) - check to see if the class is present (see {@link View#hasClass})</li>
-	 *  <li>addClass(theClass) - add class or classes (see {@link View#addClass})</li>
-	 *  <li>removeClass(theClass) - remove class or classes (see {@link View#remove})</li>
-   * </ul>
+   * &lt;p>This class extends {@link View} - refer to the {@link View} class for inherited methods - including:&lt;/p>
+   * &lt;ul>
+   *  &lt;li>render() - render HTML and return jQuery DOM object (see {@link View#render})&lt;/li>
+	 *  &lt;li>activate() - do post-DOM attachment processing (see {@link View#activate})&lt;/li>
+	 *  &lt;li>renderText() - render HTML and return HTML text as string (see {@link View#renderText})&lt;/li>
+	 *  &lt;li>renderAs(tagName) - render HTML as if it were the indicated tag (see {@link View#renderAs})&lt;/li>
+	 *  &lt;li>addContent(contentToAdd) - add content prior to rendering (see {@link View#addContent})&lt;/li>
+	 *  &lt;li>hasClass(theClass) - check to see if the class is present (see {@link View#hasClass})&lt;/li>
+	 *  &lt;li>addClass(theClass) - add class or classes (see {@link View#addClass})&lt;/li>
+	 *  &lt;li>removeClass(theClass) - remove class or classes (see {@link View#remove})&lt;/li>
+   * &lt;/ul>
    *
    * @class
    * @name tabs
@@ -674,7 +701,7 @@ var parseCssInt = function(el,key) {
       this.content = [];
       var buttons = Tags.create({tag:'hbox', 'class':'tags-tab-container', content:[{tag:'div', layout:'free', 'class':'tags-tab-spacer'}]});
       this.content.push(buttons);
-      for (var n=0; n<content.length; n++) {
+      for (var n=0; n&lt;content.length; n++) {
         var item = content[n];
         if (!Tags.isTag(item,'tab')) continue;
         if (!item.id) item.id = 'tab-'+Tags.nextInSequence();
@@ -696,19 +723,19 @@ var parseCssInt = function(el,key) {
   
   /** Provide the name for a tab and a container for the HTML exposed when the tab is clicked.
    *
-   * <p>Use Tags.create() to instantiate this class from Javascript or use the &lt;tab&gt; tag to instantiate it as static HTML.</p>
+   * &lt;p>Use Tags.create() to instantiate this class from Javascript or use the &lt;tab&gt; tag to instantiate it as static HTML.&lt;/p>
    *
-   * <p>This class extends {@link View} - refer to the {@link View} class for inherited methods - including:</p>
-   * <ul>
-   *  <li>render() - render HTML and return jQuery DOM object (see {@link View#render})</li>
-	 *  <li>activate() - do post-DOM attachment processing (see {@link View#activate})</li>
-	 *  <li>renderText() - render HTML and return HTML text as string (see {@link View#renderText})</li>
-	 *  <li>renderAs(tagName) - render HTML as if it were the indicated tag (see {@link View#renderAs})</li>
-	 *  <li>addContent(contentToAdd) - add content prior to rendering (see {@link View#addContent})</li>
-	 *  <li>hasClass(theClass) - check to see if the class is present (see {@link View#hasClass})</li>
-	 *  <li>addClass(theClass) - add class or classes (see {@link View#addClass})</li>
-	 *  <li>removeClass(theClass) - remove class or classes (see {@link View#remove})</li>
-   * </ul>
+   * &lt;p>This class extends {@link View} - refer to the {@link View} class for inherited methods - including:&lt;/p>
+   * &lt;ul>
+   *  &lt;li>render() - render HTML and return jQuery DOM object (see {@link View#render})&lt;/li>
+	 *  &lt;li>activate() - do post-DOM attachment processing (see {@link View#activate})&lt;/li>
+	 *  &lt;li>renderText() - render HTML and return HTML text as string (see {@link View#renderText})&lt;/li>
+	 *  &lt;li>renderAs(tagName) - render HTML as if it were the indicated tag (see {@link View#renderAs})&lt;/li>
+	 *  &lt;li>addContent(contentToAdd) - add content prior to rendering (see {@link View#addContent})&lt;/li>
+	 *  &lt;li>hasClass(theClass) - check to see if the class is present (see {@link View#hasClass})&lt;/li>
+	 *  &lt;li>addClass(theClass) - add class or classes (see {@link View#addClass})&lt;/li>
+	 *  &lt;li>removeClass(theClass) - remove class or classes (see {@link View#remove})&lt;/li>
+   * &lt;/ul>
    *
    * @class
    * @name tab
@@ -743,4 +770,26 @@ var parseCssInt = function(el,key) {
 
   
    
-// })(jQuery);
+// })(jQuery);</code></pre>
+        </article>
+    </section>
+
+
+
+
+</div>
+
+<nav>
+    <h2><a href="index.html">Index</a></h2><h3>Links</h3><ul><li><a href="../introduction.html">Introduction</a></li><li><a href="https://github.com/matt-thompson/tags">GitHub</a></li></ul><h3>Modules</h3><ul><li><a href="module-boxlib.html">boxlib</a></li></ul><h3>Classes</h3><ul><li><a href="hbox.html">hbox</a></li><li><a href="slider.html">slider</a></li><li><a href="tab.html">tab</a></li><li><a href="tabs.html">tabs</a></li><li><a href="vbox.html">vbox</a></li><li><a href="View.html">View</a></li></ul><h3>Namespaces</h3><ul><li><a href="Tags.html">Tags</a></li></ul>
+</nav>
+
+<br clear="both">
+
+<footer>
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.2.0-dev</a> on Sat Nov 02 2013 11:24:37 GMT-0400 (EDT)
+</footer>
+
+<script> prettyPrint(); </script>
+<script src="scripts/linenumber.js"> </script>
+</body>
+</html>
