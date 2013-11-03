@@ -8,6 +8,6 @@ manipulate dynamic HTML and implement widgets with an HTML interface.
 
 * [Getting Started](http://randomsoftwareideas.com/tags/docs/introduction.html) -- A short introduction
 * [API](http://randomsoftwareideas.com/tags/docs/jsdocs/index.html) -- Programming details
-* [boxlib](http://randomsoftwareideas.com/tags/docs/jsdocs/boxlib.html) -- A library of box layout widgets
+* [boxlib](http://randomsoftwareideas.com/tags/docs/jsdocs/module-boxlib.html) -- A library of box layout widgets
 * [GitHub](https://github.com/matt-thompson/tags-framework) -- The GitHub project
 
