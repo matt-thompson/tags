@@ -8,6 +8,19 @@ manipulate dynamic HTML and implement widgets with an HTML interface.
 
 * [Getting Started](http://randomsoftwareideas.com/tags/docs/introduction.html) -- A short introduction
 * [API](http://randomsoftwareideas.com/tags/docs/jsdocs/index.html) -- Programming details
-* [boxlib](http://randomsoftwareideas.com/tags/docs/jsdocs/module-boxlib.html) -- A library of box layout widgets
-* [GitHub](https://github.com/matt-thompson/tags-framework) -- The GitHub project
+* [GitHub](https://github.com/matt-thompson/tags.git) -- The GitHub project
+
+## Boxlib Widget Layout Library
+
+> The Tags Framework includes a small box layout library (boxlib.js) that demonstrates
+how a widget library can be implemented with the Tags Framework.
+* [boxlib](http://randomsoftwareideas.com/tags/docs/jsdocs/module-boxlib.html) -- Boxlib API docs
+* [Holy Grail](http://randomsoftwareideas.com/tags/docs/examples/holy-grail.html) -- Boxlib example
+
+## Boxlib Implementation of the Todo Application
+
+> The Tags implementation of the ToDo application shows how the Tags Framework can
+be used to implement an MVC-style Web application.
+* [ToDo - source](http://github.com/matt-thompson/tagsTodo.git)
+* [ToDo](http://randomsoftwareideas.com/tags)
 
