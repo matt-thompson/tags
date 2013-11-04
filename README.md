@@ -21,6 +21,6 @@ how a widget library can be implemented with the Tags Framework.
 
 > The Tags implementation of the ToDo application shows how the Tags Framework can
 be used to implement an MVC-style Web application.
-* [ToDo - source](http://github.com/matt-thompson/tagsTodo.git)
-* [ToDo](http://randomsoftwareideas.com/tags)
+* [ToDo](http://randomsoftwareideas.com/tagsTodo) -- Todo example
+* [GitHub](http://github.com/matt-thompson/tagsTodo.git) -- The GitHub project
 
