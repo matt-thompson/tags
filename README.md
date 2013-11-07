@@ -17,7 +17,7 @@ how a widget library can be implemented with the Tags Framework.
 * [boxlib](http://randomsoftwareideas.com/tags/docs/jsdocs/module-boxlib.html) -- Boxlib API docs
 * [Holy Grail](http://randomsoftwareideas.com/tags/docs/examples/holy-grail.html) -- Boxlib example
 
-## Boxlib Implementation of the Todo Application
+## Tags Implementation of the Todo Application
 
 > The Tags implementation of the ToDo application shows how the Tags Framework can
 be used to implement an MVC-style Web application.
