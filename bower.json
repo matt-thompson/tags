@@ -1,11 +1,7 @@
 {
   "name": "tags",
   "version": "0.9.5",
-  "main":["tags.js"],
   "dependencies": {
     "jquery": "~1.9.1"
-  },
-  "install": {
-    "path": "tags.js"
   }
 }
