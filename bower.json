@@ -1,6 +1,7 @@
 {
   "name": "tags",
   "version": "0.9.6",
+  "main": "tags.js",
   "dependencies": {
     "jquery": "~1.9.1"
   }

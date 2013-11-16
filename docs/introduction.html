@@ -58,7 +58,7 @@ pre {margin: 2px 4px 2px 8px; border:solid thin blue; padding:4px 4px 4px 8px; o
       
       save: function() {
         var rep = JSON.stringify(this.serialize());
-        localStorage.setItem('myNamespace-'+this.lastName+'-',rep);
+        localStorage.setItem('myNamespace-'+this.firstName+'-'+this.lastName,rep);
       },
                  
       serialize: function() {
@@ -101,7 +101,7 @@ pre {margin: 2px 4px 2px 8px; border:solid thin blue; padding:4px 4px 4px 8px; o
 
 <pre>
   ...
-  var person = Tags.create(JSON.parse(localStorage.getItem('myNamespace-Doe-John'));
+  var person = Tags.create(JSON.parse(localStorage.getItem('myNamespace-John-Doe'));
 </pre>
 
 <h2>Handling Views</h2>
@@ -179,7 +179,7 @@ Tags.define({
    use custom tags just as you use standard HTML tags.</p>
    
 <p>If you do not want this automatic behavior, just give the &lt;script&gt; some
-   other type than 'text/custom-tag'.</p>
+   other type than 'text/custom-tags'.</p>
 
 <p>One nice thing about the Tags framework is that custom tags are light-weight 
    and easy to define. This means you can create a custom tag just to bind an event 
@@ -205,7 +205,7 @@ Tags.define({
   
   activate: function() {
     this._super();
-    this.el.on('click',function() {
+    this.$el.on('click',function() {
       alert('STARTED');
     });
   }
