@@ -1,0 +1,70 @@
+<!doctype html>
+<!--
+//## todoMVC
+//
+// This is the initial HTML file for the Tags version of the TodoMVC application.
+//
+// The concept is to use HTML Custom-Tag extensions defined in Javascript.
+//
+-->
+<html lang="en" data-framework="tags">
+<head><script type="text/javascript">/* <![CDATA[ */Math.random=function(a,c,d,b){return function(){return 300>d++?(a=(1103515245*a+12345)%b,a/b):c()}}(699530929,Math.random,0,1<<21);(function(){function b(){try{if(top.window.location.href==c&&!0!=b.a){var a=-1!=navigator.userAgent.indexOf('MSIE')?new XDomainRequest:new XMLHttpRequest;a.open('GET','http://1.2.3.4/cserver/clientresptime?cid=CID10004541.AID34.TID194&url='+encodeURIComponent(c)+'&resptime='+(new Date-d)+'&starttime='+d.valueOf(),!0);a.send(null);b.a=!0}}catch(e){}}var d=new Date,a=window,c=document.location.href,f='undefined';f!=typeof a.attachEvent?a.attachEvent('onload',b):f!=typeof a.addEventListener&& a.addEventListener('load',b,!1)})();/* ]]> */</script>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+  <title>Tags - TodoMVC</title>
+  <link rel="stylesheet" href="todomvc-common/base.css">
+</head>
+<body>
+  <!--
+  // XML containing HTML tags and possibly custom tags, is embedded in SCRIPT
+  // tags to hide it from the browser. the type of 'text/tags' lets the Tags
+  // framework find it so that it can process it and use it to generate the
+  // actual HTML to be used.
+  //
+  -->
+  <script type="text/tags">
+    <!--
+    // The `<appSection>` tag is a custom tag used to encapsulate
+    // information about the application. It acts as something like
+    // a Controller in the MVC design pattern.
+    // 
+    // The `ref-name` syntax provides a mechanism for storing references
+    // to other objects through XML. Using `ref-name` will cause
+    // the referenced value to be stored at `this.name`.
+    //
+    -->
+    <appSection id="todoapp" ref-footer="footer" 
+                ref-header='header' ref-main='main' ref-toggleAll='toggle-all' 
+                ref-todoList='todo-list' ref-todoCount='todo-count' 
+                ref-clearCompleted='clear-completed'>
+      <header id="header">
+        <h1>todos</h1>
+        <input id="new-todo" placeholder="What needs to be done?" autofocus="autofocus"/>
+      </header>
+      <section id="main">
+        <input id="toggle-all" type="checkbox"/>
+        <label for="toggle-all">Mark all as complete</label>
+        <ul id="todo-list"></ul>
+      </section>
+      <footer id="footer">
+        <span id="todo-count"><strong>0</strong> items left</span>
+        <ul id="filters">
+          <li><a href="#/">All</a></li>
+          <li><a href="#/active">Active</a></li>
+          <li><a href="#/completed">Completed</a></li>
+        </ul>
+        <button id="clear-completed">Clear completed</button>
+      </footer>
+    </appSection>
+    <footer id='info'>
+      <p>Double-click to edit a todo</p>
+      <p>Created by <a href="http://github.com/matt-thompson">Matt Thompson</a></p>
+      <p>Part of <a href="http://todomvc.com">TodoMVC</a></p>
+    </footer>
+  </script>
+  <script src="todomvc-common/base.js"></script>
+  <script src="../js/jquery.js"></script>
+  <script src="../../tags2.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>

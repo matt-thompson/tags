@@ -1,0 +1,9 @@
+/*## Styles for the TodoMVC example.
+//
+// There is nothing special about using styles with
+// the Tags framework. 
+*/
+#main,
+#footer {
+	display: none;
+}

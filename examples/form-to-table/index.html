@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<!--
+//## Form-to-Table
+// 
+// This is a plain old HTML file. The Tags framework does
+// not care how things get started. Use plain HTML, JSP, PHP or whatever.
+// -->
+<html lang='en'>
+  <head>
+    <meta charset='utf-8'>
+    <title>Form-to-Table Example</title>
+    <!-- Include any application-specific CSS files. -->
+    <link rel="stylesheet" href="app.css">
+    <!-- jQuery is required - use any version that works for you. -->
+    <script src="../js/jquery.js"></script>
+    <!-- Include the Tags framework Javascript code. -->
+    <script src="../../tags.js"></script>
+    <!-- Include any application-specific Javascript files. -->
+    <script src="app.js"></script>
+  </head>
+  <body>
+    <!--
+    // Putting some XML
+    // inside &lt;script&gt; tags prevents the browser from
+    // treating it like HTML. Giving the &lt;script&gt; tag
+    // a type of 'text/tags' tells the Tags framework to
+    // process it.
+    //
+    // The Tags.create() method will be invoked on every
+    // XML child element of the &lt;script&gt; tag and if
+    // it is a 'view' object, it will be rendered and
+    // activated (its view.render() method and view.activate()
+    // methods will be called).
+    // -->
+    <script type='text/tags'>
+      <div id='form' class='form'>
+        <div style='float:left; width:100%; text-align:center;'>Personal Information</div>
+        <!--
+        // 
+        // The &lt;field&gt; tag is a custom-tag. We invented it
+        // to encapsulate a labeled &lt;input&gt; tag. This lets us
+        // ignore low-level implementation detail not relevant to
+        // the higher-level structure.
+        //
+        // -->
+        <field name='name' style='float:left; width:70%;'/>
+        <field name='age' style='float:left; width:30%;'/>
+        <field name='email' style='float:left; width:45%'/>
+        <field name='occupation' style='float:left; width:55%;'/>
+        <div style='float:clear; text-align:center; width:100%;'>
+          <!--
+          // The &lt;saveButton&gt; renders just like a standard button,
+          // but by defining it as a custom-tag, we can encapsulate
+          // the event handler and make it more obvious how to find it.
+          // We can use the 'ref-name' syntax to represent a reference
+          // to another Tag object identified by its 'id' attribute.
+          // -->
+          <saveButton ref-personTable='personTable' 
+                      ref-form='form' 
+                      ref-personButton='personButton'>Save</saveButton>
+          <cancelButton ref-form='form' ref-personButton='personButton'>Cancel</cancelButton>
+        </div>
+      </div>
+      <addPersonButton id='personButton' ref-personTable='personTable' ref-form='form'>Add Person</addPersonButton>
+      <!--
+      // The &lt;personTable&gt; tag is another custom tag. It will have its content
+      // generated as dynamic HTML. A method for doing that is encapsulated into the
+      // 'personTable' type.
+      // -->
+      <personTable id='personTable'>
+        <thead>
+          <tr>
+            <th>Name</th>
+            <th>Age</th>
+            <th>Occupation</th>
+            <th>Email</th>
+          </tr>
+        </thead>
+        <tbody />
+      </personTable>
+    </script>
+  </body>
+</html>

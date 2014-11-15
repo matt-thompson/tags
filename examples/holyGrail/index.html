@@ -1,0 +1,74 @@
+<!doctype html>
+<!--
+//## Layout Example
+// 
+// This demonstrates the Border Layout Tag and the Tabs Tag.
+// -->
+<html>
+<head>
+  <!--
+  // Load Javascript and CSS files
+  -->
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+  <title>The Holy Grail of Layouts: Tags Version</title>
+  <link rel="stylesheet" href="layout.css">
+  <link rel="stylesheet" href="app.css">
+  <script src="../js/jquery.js"></script>
+  <script src="../../tags.js"></script>
+  <script src="layout.js"></script>
+</head>
+
+<body style='overflow:auto;'>
+
+  <script type='text/tags'>
+    <!--
+    // The BorderLayout Tag can hold North, South, East, West and Middle elements, one each.
+    // All but the Middle element are optional. Order is not important.
+    -->
+    <borderLayout>
+      <!--
+      // This is the North element as indicated by having a class of 'north'. It can
+      // be resized as indicated by the class of 'resize'. The South, East and West
+      // tags are similar. 
+      -->
+      <div class='north resize' id="header" style='height:60px; min-height:40px;'>
+        <h4>This is the header.</h4>
+      </div>
+           
+      <div class='west resize' id="left" style='width:180px; min-width:120px; overflow:auto;'> 
+        <h4>This is the left sidebar.</h4>
+        <p>Lorem ipsum dolor sit amet, consectetuer adipiscing elit, sed diam nonummy nibh euismod tincidunt ut laoreet dolore magna aliquam erat volutpat. Ut wisi enim ad minim veniam, quis nostrud exerci tation ullamcorper suscipit lobortis nisl ut aliquip ex ea commodo consequat. Duis autem vel eum iriure dolor in hendrerit in vulputate velit esse molestie consequat, vel illum dolore eu feugiat nulla facilisis at vero eros et accumsan et iusto odio dignissim qui blandit praesent luptatum zzril delenit augue duis dolore te feugait nulla.</p>
+      </div>
+        
+      <div class='middle' style='overflow:hidden;'>
+        <h4 style='position:absolute; width:100%; top:0px; height;40px;text-align:center'>This is the main content</h4>
+        <tabs style='position:absolute; width:100%; top:40px; height:24px;'>
+          <tab label='Lorem' class='selected'>
+            <p>Lorem ipsum dolor sit amet, consectetuer adipiscing elit, sed diam nonummy nibh euismod tincidunt ut laoreet dolore magna aliquam erat volutpat. Ut wisi enim ad minim veniam, quis nostrud exerci tation ullamcorper suscipit lobortis nisl ut aliquip ex ea commodo consequat. Duis autem vel eum iriure dolor in hendrerit in vulputate velit esse molestie consequat, vel illum dolore eu feugiat nulla facilisis at vero eros et accumsan et iusto odio dignissim qui blandit praesent luptatum zzril delenit augue duis dolore te feugait nulla.</p>
+          </tab>
+          <tab label='Ipsum'>
+           <p>Ipsum dolor sit amet, consectetuer adipiscing elit, sed diam nonummy nibh euismod tincidunt ut laoreet dolore magna aliquam erat volutpat. Ut wisi enim ad minim veniam, quis nostrud exerci tation ullamcorper suscipit lobortis nisl ut aliquip ex ea commodo consequat. Duis autem vel eum iriure dolor in hendrerit in vulputate velit esse molestie consequat, vel illum dolore eu feugiat nulla facilisis at vero eros et accumsan et iusto odio dignissim qui blandit praesent luptatum zzril delenit augue duis dolore te feugait nulla.</p>
+          </tab>
+          <tab label='Dolor'>
+            <p>Dolor sit amet, consectetuer adipiscing elit, sed diam nonummy nibh euismod tincidunt ut laoreet dolore magna aliquam erat volutpat. Ut wisi enim ad minim veniam, quis nostrud exerci tation ullamcorper suscipit lobortis nisl ut aliquip ex ea commodo consequat. Duis autem vel eum iriure dolor in hendrerit in vulputate velit esse molestie consequat, vel illum dolore eu feugiat nulla facilisis at vero eros et accumsan et iusto odio dignissim qui blandit praesent luptatum zzril delenit augue duis dolore te feugait nulla.</p>
+          </tab>
+          <tab label='Consectetuer'>
+            <p>Consectetuer adipiscing elit, sed diam nonummy nibh euismod tincidunt ut laoreet dolore magna aliquam erat volutpat. Ut wisi enim ad minim veniam, quis nostrud exerci tation ullamcorper suscipit lobortis nisl ut aliquip ex ea commodo consequat. Duis autem vel eum iriure dolor in hendrerit in vulputate velit esse molestie consequat, vel illum dolore eu feugiat nulla facilisis at vero eros et accumsan et iusto odio dignissim qui blandit praesent luptatum zzril delenit augue duis dolore te feugait nulla.</p>
+          </tab>
+        </tabs>
+      </div>
+        
+      <div class='east resize' style='width:140px; min-width:100px;' id="right">
+        <h4>This is the right sidebar.</h4>
+        <p>Lorem ipsum dolor sit amet, consectetuer adipiscing elit, sed diam nonummy nibh euismod tincidunt ut laoreet dolore magna aliquam erat volutpat. Ut wisi enim ad minim veniam, quis nostrud exerci tation ullamcorper suscipit lobortis nisl ut aliquip ex ea commodo consequat. Duis autem vel eum iriure dolor in hendrerit in vulputate velit esse molestie consequat, vel illum dolore eu feugiat nulla facilisis at vero eros et accumsan et iusto odio dignissim qui blandit praesent luptatum zzril delenit augue duis dolore te feugait nulla.</p>
+      </div>
+      
+      <div class='south resize' id="footer" style='height:50px; min-height:30px;'>
+        <h4>This is the footer.</h4>
+      </div>
+    </borderLayout>
+    
+  </script>
+</body>
+
+</html>

@@ -1,146 +1,245 @@
+// tags.js 0.9.2
+
 var log = log || {debug:function() {}};
 
-//(function($) {
+//# Tags namespace
+//
+// The Tags namespace provides the capability to define Tag types using
+// Tags.define() and instantiate Tag types using Tags.create().
+//
+// Tag types mimic XML. They have a 'tag' attribute which holds
+// the tag name and a 'content' attribute which holds nested content.
+//
+//<br/>
+//   
+var Tags = {
 
-
-	/* Simple JavaScript Inheritance
-	 * By John Resig http://ejohn.org/
-	 * MIT Licensed.
-	 */
-	// Inspired by base2 and Prototype
-  var initializing = false, fnTest = /xyz/.test(function(){xyz;}) ? /\b_super\b/ : /.*/;
- 
-  // The base Class implementation (does nothing)
-  this.Class = function(){};
-     
-  // Create a new Class that inherits from this class
-  Class.extend = function(prop) {
-    var _super = this.prototype;
-    
-    // Instantiate a base class (but only create the instance,
-    // don't run the init constructor)
-    initializing = true;
-    var prototype = new this();
-    initializing = false;
-   
-    // Copy the properties over onto the new prototype
-    for (var name in prop) {
-      // Check if we're overwriting an existing function
-      prototype[name] = typeof prop[name] == "function" &&
-        typeof _super[name] == "function" && fnTest.test(prop[name]) ?
-        (function(name, fn){
-          return function() {
-            var tmp = this._super;
-           
-            // Add a new ._super() method that is the same method
-            // but on the super-class
-            this._super = _super[name];
-           
-            // The method only need to be bound temporarily, so we
-            // remove it when we're done executing
-            var ret = fn.apply(this, arguments);        
-            this._super = tmp;
-           
-            return ret;
-          };
-        })(name, prop[name]) :
-        prop[name];
-    }
-   
-    // The dummy class constructor
-    function Class() {
-   
-      // All construction is actually done in the init method
-      if ( !initializing && this.init )
-        this.init.apply(this, arguments);
-    }
-   
-    // Populate our constructed prototype object
-    Class.prototype = prototype;
-   
-    // Enforce the constructor to be what we expect
-    Class.prototype.constructor = Class;
- 
-    // And make this class extendable
-    Class.extend = arguments.callee;
-   
-    return Class;
-  };
-
-  'use strict';
+  // Map type names to Constructors which can be used to instatiate the mapped type
+  protoMap: {},
   
-/** Implement the core functionality of the Tags Framework.
- *
- * <p>The Tags namespace provides the capability to define Tag classes using
- *    Tags.define() and instantiate Tags classes using Tags.create().</p>
- *
- * <p>Tag classes mimic XML. They have a 'tag' attribute which holds
- *    the tag name and a 'content' attribute which holds nested content.</p>
- *
- * @namespace Tags
- */
-  var Tags = {
+  // Provide a name space for instantiated objects
+  ns: {},
   
-    defaultClass: null,
-    classMap: {'CLASS':Class},
-    sequentialNumber: 0,
-    parseTime: 0,
-    workTime: 0,
-    tagsById: {},
-    
-  nextInSequence: function() {
-    this.sequentialNumber++;
-    return this.sequentialNumber;
+  // Provide an a unique ID - increment each time used
+  nextId: 0,
+  
+  // Keeps track of errors
+  errors: [],
+  
+  // Internal - keep track of fixups
+  fixups: {},
+  
+  // Implement _.extend() method so we do not need to depend on underscore.js
+  extendProto: function(obj) {
+    for (var n=1,len=arguments.length; n<len; n++) {
+      var source = arguments[n];
+      if (source) {
+        for (var prop in source) {
+          obj[prop] = source[prop];
+        }
+      }
+    }
+    return obj;
+  },
+
+  // Return the prototype associated with the tagName provided
+  proto: function(tagName) {
+    return Tags.protoMap[tagName.toUpperCase()].prototype;
   },
   
-/**
- * Define a new Tag Class and register it.
- *
- * <p>The proto parameter must have a 'tag' attribute that specifies the name of the
- *    class to be used by Tags.create() to find this class for instantiation.
- *    The proto.extend attribute indicates the class to
- *    be extended (or none if not provided).</p>
- *  
- * <p>Additional attributes of the 'proto' parameter will be added to the prototype
- *    of the class being defined.</p>
- *  
- * <p>Typical use of Tags.define() is to extend View to create a custom tag. Here
- *    is a simple example of that.</p>
- *
- * <pre class='code'>
- *
- *  Tags.define({
- *    tag: 'mytag',
- *    extend: 'view',
- *
- *    renderText: function() {
- *      if (this.message) this.content = this.message;
- *      return this.renderAsDiv();
- *    }
- *  });
- * </pre>
- *
- * @param {Object} proto The config object that contains the tag name of the Tag class being defined and additional prototype information for the class.
- *  
- */    
+  // Convenience method to create a unique ID
+  uniqueId: function(prefix) {
+    Tags.nextId++;
+    return (prefix || 'tag-')+Tags.nextId;
+  },
+  
+  // Internal debugging method to display an arbitrary object
+  show: function(tag,indent,all) {
+    if (typeof tag == 'boolean' || typeof tag == 'number') return ''+tag;
+    if (typeof tag == 'string') return '"'+tag.trim()+'"';
+    if (tag === null) return 'null';
+    if (tag === undefined) return 'undefined';
+    if (typeof tag === 'function') return 'FUN';
+    if (indent === undefined) indent = null;
+    var text = '';
+    if (typeof tag === 'object') {
+      if (tag.length) {
+        text += '[';
+        if (indent !== null) {
+          for (var n=0; n<tag.length; n++) {
+            if (n > 0) text += ',';
+            text += Tags.show(tag[n],indent);
+          }
+        }
+        return text + ']';
+      }
+      text += "{";
+      if (tag.tag) text += "tag:'"+tag.tag+"'";
+      for (var key in tag) {
+        if (key =='tag' || key == 'content') continue;
+        var val = tag[key];
+        if (typeof val == 'function') {
+          if (all) {
+            if (text.length > 4) text += ', ';
+            text += key+':FUN';
+          }
+        } else if (typeof val === 'object') {
+          if (text.length > 4) text += ', ';
+          text += key+':{'+(val.tag ? 'tag:'+val.tag : '')+'}';
+        } else {
+          if (text.length > 4) text += ', ';
+          text += key+':'+Tags.show(val);
+        }
+      }
+      if (indent !== null && tag.content) {
+        if (text.length > 4) text += ', ';
+        text += 'content:';  
+        var content = tag.content;
+        if ($.isArray(content)) {
+          text += '[\n';
+          indent += '  ';
+          for (var n=0; n<content.length; n++) {
+            text += indent + Tags.show(content[n],indent)+'\n';
+          }
+          indent = indent.substr(2);
+          text += indent + ']';
+        } else {
+          text += Tags.show(content);
+        }
+      }
+      return text + '}';
+    }
+  },
+
+  // internal
+  addFixup: function(path,fixup) {
+    var fixups = Tags.fixups[path];
+    if (!fixups) {
+      fixups = [];
+      Tags.fixups[path] = fixups;
+    }
+    fixups.push(fixup);
+  },
+  
+  // internal
+  resolveFixups: function() {
+    for (var key in Tags.fixups) {
+      var fixups = Tags.fixups[key];
+      delete Tags.fixups[key];
+      var tag = Tags.ns[key];
+      for (var n=0; n<fixups.length; n++) {
+        var fixup = fixups[n];
+        if (fixup.callback) {
+          Tags.refFrom(tag,fixup.path,fixup.target,fixup.name,fixup.callback);
+        } else {
+          Tags.assignTo(tag,fixup.path,fixup.val);
+        }
+      }
+    }
+  },
+        
+  // internal
+  assignTo: function(root,path,val) {
+    var parts = typeof path === 'string' ? path.split('.') : path;
+    if (!path || !path.length) throw "Tags.assignTo PATH is REQUIRED";
+    var item = root;
+    var nextItem;
+    var n;
+    for (n=0; n<parts.length-1; n++) {
+      if (!(nextItem = item[parts[n]])) {
+        item.id || (item.id = Tags.uniqueId());
+        var nextItemId = parts.slice(0,n).join('.');
+        console.log('assignTo ADD-FIXUP path='+path+' val.id='+val.id);
+        Tags.addFixup(nextItemId,{path:parts.slice(n),val:val});
+        return;
+      }
+      item = nextItem;
+    }
+    console.log('assignTo SETTING path='+path+' val.id='+val.id);
+    item[parts[n]] = val;
+  },
+
+  // internal  
+  refFrom: function(root,path,target,name,callback) {
+    var parts = typeof path === 'string' ? path.split('.') : path;
+    var item = root;
+    var nextItem;
+    var n;
+    if (!target.id) target.id = Tags.uniqueId();
+    for (n=0; n<parts.length; n++) {
+      if (!(nextItem = item[parts[n]])) {
+        var nextItemId = parts.slice(0,n+1).join('.');
+        if (callback) {
+          var subParts = parts.slice(n+1);
+          var fixup = {path:subParts,target:target,name:name,callback:callback};
+          Tags.addFixup(nextItemId,fixup);
+        }
+        return null;
+      }
+      item = nextItem;
+    }
+    if (callback) callback.call(target,name,item);
+    return item;
+  },
+
+  // internal    
+  assign: function(path,val) {
+    Tags.assignTo(Tags.ns,path,val);
+  },
+  
+  //
+  ref: function(path,name,callback) {
+    return Tags.refFrom(Tags.ns,path,this,name,callback);
+  },
+          
+//### method Tags.define()
+//
+// arguments:
+//
+//* proto a simple object whose attributes will be copied to the prototype
+//  of the type being defined.
+//
+//> Define a new type which extends another type and can be instantiated using Tags.create().
+//
+// The proto parameter is copied into the prototype of the new type. A 'tag'
+// attribute is required and will be used to find the type definition by the Tags.create() method.
+//
+// An optional 'extend' attribute specifies the name of the type to be extended. It will
+// extend the 'ROOT' type if not provided.
+//
+// An optional 'content' attribute contains nested content.
+//
+// Additional attributes of the 'proto' parameter will be added to the prototype
+// of the class being defined.
+//
+//<br/>
+//   
   define: function(proto) {
-    var extended = null;
-    if (proto.extend) extended = Tags.classMap[proto.extend.toUpperCase()];
-    extended = extended || Tags.defaultClass;
-    var cls = extended.extend(proto);
-    if (proto.tag) Tags.classMap[proto.tag.toUpperCase()] = cls;
-//      log.debug("Tags.extend classMap="+JSON.stringify(Tags.classMap));
-    return cls;  
+    var text = '';
+    var superCls = Tags.protoMap[(proto.extend || 'root').toUpperCase()] || Tags.Root;
+    var theConstructor = function() {};
+    var superProto = new superCls();
+    theConstructor.prototype = Tags.extendProto({},superProto,proto);
+    theConstructor.prototype.constructor = superCls;
+    Tags.protoMap[proto.tag.toUpperCase()] = theConstructor;
+    return theConstructor;
   },
       
-  /** Convenience function for determining if a value is a Tag, possibly of a specified type.
-   *
-   *  Use this to select just the Tag objects or Tag objects of a specific type, from an array 
-   *  of content. 
-   *
-   *  @param {any} val The value to be tested
-   *  @param {string} [tagName] The value candidate 'tag' attribute must match
-   */
+//### method Tags.isTag()
+//
+// arguments:
+//
+//* val the value for which the determination is to be made
+//
+//* tagName an optional comma seaparated list of tag names
+// 
+//Convenience function for determining if a value is a Tag, possibly of a specified type.
+// 
+//The val arguments is the object to be tested
+//
+//The tagName is an optional list of tagNames - if provided the object's tag must match
+//one of the list
+//
   isTag: function(val, tagName) {
     if (!val) return false;
     if (typeof val != 'object' || !val._isTag) return false;
@@ -152,418 +251,436 @@ var log = log || {debug:function() {}};
     return val.tag == tagName;
   },
 
-  /** Find a Tag object by its id attribute.
-   *
-   * <p>This is used primarily by the View class. The view.activate() method
-   *    automatically adds unique view.id attributes and saves the corresponding
-   *    Tag object to be found by this method.</p>
-   *
-   * @param {string} id The id of the Tag object to be found
-   * @return {Object} the Tag object associated with the id
-   */  
-  findTag: function(id) {
-    return Tags.tagsById[id];
-  },
+//### method Tags.create()
+//
+// arguments:
+//
+//* config the object that specifies the object to be created
+//
+//* parent an optional reference to the object to contain the created object
+//
+//Create a new instance of a Tag type
+//
+//The config argument may be of any type. If it is
+//a boolean, number, string not starting with &lt; or evaluates
+//to false then the value of the 'config' argument is returned.
+//
+//If config is an XML DOM object, it will be used to instantiate
+//an object where the XML tag name is used to select the type
+//and XML attributes are mapped to object attributes. Nested
+//content will be evaluated recursively and stored in the 'content'
+//attribute.
+//
+//If config is a string starting with '&lt;', then it will be
+//parsed into an XML DOM argument and interpreted as described above.
+//
+//If config is a plain object, it will be used to instantiate an object
+//where the 'tag' attribute selects the type and the optional 'content'
+//attribute is interpreted as nested content. Other attributes will be
+//copied into the instantiated object.
+//
+//The optional parent argument specifies the parent of the instantiated
+//object and will be store in the 'parent' attribute.
+//
+  create: function(config,parent) {
+    var tag, Cls, child, n;
 
-  /** Create a new instance of a Tag class.
-   *
-   *  <p>Instantiation information
-   *     is provided by the config parameter. It must, at least have a 'tag'
-   *     attribute which is used to select the Tag class to be used.</p>
-   *
-   *  <p>It is possible that the value of the 'tag' attribute does not map
-   *     to any Tag class. In that case, a default class will be used which 
-   *     can be specified with the optional 'defaultClass'
-   *     parameter. If not provided, the built-in View class will be used. This
-   *     behavior is used to allow the View class to be used to represent
-   *     arbitrarily complex HTML structures.</p>
-   *
-   *  <p>The create() method can be used to instantiate a complete Tag object
-   *     structure corresponding to an XML structure. 
-   *     It is called recursively to process the
-   *     nested content contained in the config.content attribute.</p>
-   *     The config parameter
-   *     describes Tag object structure to be instantiated using XML 
-   *     or Javascript as described below.</p>
-   *
-   *  <p>The config parameter:</p>
-   *  <ul>
-   *    <li>Tag Object
-   *      <p>If the config parameter is already a Tag object, return it 
-   *         without further processing. A Tag object is recognized by 
-   *         having an '_isTag' attribute which is set by Tags.create().</p>
-   *    </li>
-   *    <li>Plain Object
-   *      <p>config.tag will indicate the Class to be instantiated</p>
-   *      <p>config.content is the nested content</p>
-   *      <p>other config attributes become attributes of the instantiated object</p>
-   *    </li>
-   *    <li>XML-Node
-   *      <p>the tag name indicates the Class to be instantiated</p>
-   *      <p>nested content of the XML becomes the nested content of the instantiated object</p>
-   *      <p>other attributes of the XML become attributes of the instantiated object</p>
-   *    </li>
-   *    <li>String that starts with '&lt;'
-   *      <p>it is interpreted as XML, parsed and processed as an XML-Node</p>
-   *    </li>
-   *    <li>String|number|boolean
-   *      <p>evaluates to the value of config as a string</p>
-   *    </li>
-   *  </ul>
-   *
-   *  <p>The create() function calls itself recursively to process nested content.</p>
-   *  
-   *  <p>This method pretty much does what you expect it to do. Here
-   *     is an example ...</p>
-   *
-   *  <pre class='code'>
-   *    var tag = Tags.create(
-   *         "&lt;div class='emphatic'>"
-   *       +   "Hello "
-   *       +   "&lt;span style='color:red;'&gt;World&lt;/span&gt;&lt;"
-   *       + "/div&gt;");
-   *  </pre>
-   *
-   *  <p>To do the same thing with Javascript ...</p>
-   *
-   *  <pre class='code'>
-   *    var tag = Tags.create(
-   *       {tag:'div', class:'emphatic', content: [
-   *         'Hello '
-   *         {tag:'span', style:'color:red;', content:'World'
-   *       }]);
-   *  </pre>
-   *
-   *  <p>The create() function calls itself recursively to process nested content. That is why
-   *     it needs to be able to handle non-XML strings, numbers and booleans.</p>
-   *
-   *  @param {(Object|XML-Node|string|number|boolean|null)} config The specifier of what is to be created
-   *  @param {string} [defaultClass] the tag name of the Tag class to be used if config.tag does not map to know Tag class
-   */        
-  create: function(config) {
-    var xmldoc, tag, Cls, child, n;
-    var startTime = new Date().getTime();
-    if (!config) return null;
-    if (typeof config == 'string') {
-//        log.debug("BUILD text="+config);
-      var trimmed = $.trim(config);
-      if (trimmed.length > 0 && trimmed.charAt(0) == '<') {
-        var xmlnode = $.parseXML(trimmed).documentElement;
-        var time = new Date().getTime();
-        Tags.parseTime += time - startTime;
-        startTime = time;
-        window.theXmlnode = xmlnode;
-//          log.debug("xmlnode.nodeType="+xmlnode.nodeType);
-        tag = Tags.create(xmlnode);
-//          log.debug("BUILD tag="+tag.tag);
-        Tags.workTime += new Date().getTime() - startTime;
-        return tag;
-      } else {
-        return config;
-      }
-    } else if (config.nodeType == 1) {
-      // XML Node element
-      var attrs = {tag:config.nodeName};
-//        log.debug("BUILD-XML nodeName="+config.nodeName);
-      var nodeAttrs = config.attributes;
-      for (var m=0; m<nodeAttrs.length; m++) {
-        var attr = nodeAttrs[m];
-        attrs[attr.name] = attr.value;
-      }
-//        log.debug("BUILD-XML attrs="+JSON.stringify(attrs));
-      Cls = Tags.classMap[attrs.tag.toUpperCase()] || Tags.defaultClass;
-      tag = new Cls(attrs);
-//        log.debug("BUILD-XML tag="+Tags.showTag(tag));
-      tag._isTag = true;
-      var children = config.childNodes;
-      if (children) {
-        tag.content = [];
-        var val;
-        for (n=0; n<children.length; n++) {
-          var childNode = children[n];
-          switch (childNode.nodeType) {
-          case 1:  // ELEMENT_NODE
-            child = Tags.create(childNode);
-            if (Tags.isTag(child)) child.parent = tag;
-            tag.content.push(child);
-            break;
-          case 3:  // TEXT_NODE
-            val = childNode.nodeValue;
-            tag.content.push(val);
-            break;
-          case 4:  // CDATA_SECTION_NODE
-            val = childNode.nodeValue;
-            tag.content.push(val);
-            break;
-          }
-        }
-      }
-      Tags.workTime += new Date().getTime() - startTime;
-      return tag;
-    } else if ((typeof config) != 'object' || config._isTag) {
-      return config;
-    } else {
-      // Javascript Object
-      Cls = Tags.classMap[config.tag.toUpperCase()] || Tags.defaultClass;
-      tag = new Cls(config);
-      tag._isTag = true;
-      if (config.content) {
-        if (typeof config.content == 'object') {
-          for (n in config.content) {
-            child = Tags.create(config.content[n]);
-            if (Tags.isTag(child)) child.parent = tag;
-            config.content[n] = child;
-          }
+    if (!config) return config;
+      if (typeof config == 'string') {
+        var trimmed = $.trim(config);
+        if (trimmed.length > 0 && trimmed.charAt(0) == '<') {
+          var xmlnode = $.parseXML(trimmed).documentElement;
+          window.theXmlnode = xmlnode;
+          log.debug("xmlnode.nodeType="+xmlnode.nodeType);
+          tag = Tags.create(xmlnode,parent);
+          return tag;
         } else {
-          child = Tags.create(config.content);
-          if (Tags.isTag(child)) child.parent = tag;
-          tag.content = child;
+          return config;
         }
+      } else if (config.nodeType == 1) {
+        var attrs = {tag:config.nodeName};
+        var nodeAttrs = config.attributes;
+        for (var m=0; m<nodeAttrs.length; m++) {
+          var attr = nodeAttrs[m];
+          attrs[attr.name] = attr.value;
+        }
+        var clsName = attrs.tag.toUpperCase();
+        Cls = Tags.protoMap[clsName] || Tags.Root;
+        if (!Cls) throw "No class found for tag="+attrs.tag;
+        tag = new Cls();
+        tag.initialize(attrs,parent);
+        tag.tag = attrs.tag;
+        tag._isTag = true;
+        var children = config.childNodes;
+        if (children) {
+          tag.content = [];
+          var val;
+          for (n=0; n<children.length; n++) {
+            var childNode = children[n];
+            switch (childNode.nodeType) {
+            case 1:  // ELEMENT_NODE
+              child = Tags.create(childNode,tag);
+              tag.content.push(child);
+              break;
+            case 3:  // TEXT_NODE
+              val = childNode.nodeValue;
+              tag.content.push(val);
+              break;
+            case 4:  // CDATA_SECTION_NODE
+              val = childNode.nodeValue;
+              tag.content.push(val);
+              break;
+            }
+          }
+        }
+        return tag;
+      } else if ($.isArray(config)) {
+        var tags = [];
+        for (var n=0; n<config.length; n++) {
+          tags.push(Tags.create(config[n],parent));
+        }
+        return tags;
+      } else if ((typeof config) != 'object' || config._isTag) {
+        return config;
+      } else {
+        var clsName = config.tag.toUpperCase();
+        Cls = Tags.protoMap[clsName] || Tags.Root;
+        tag = new Cls();
+        tag.initialize(config,parent);
+        tag._isTag = true;
+        if (config.content) {
+          if ($.isArray(config.content)) {
+            tag.content = [];
+            for (var n in config.content) {
+              var child = Tags.create(config.content[n],tag);
+              tag.content.push(child);
+            }
+          } else {
+            var child = Tags.create(config.content,tag);
+            tag.content = child;
+          }
+        }
+        return tag;
       }
-      Tags.workTime += new Date().getTime() - startTime;
-      return tag;
-    }
-  }, // Tags.create()
-  
-  // The remaining methods are general purpose utilities
-  
-  asArray: function(x) {
-    var xx = x != false ? (x || []) : x;
-    return typeof xx == 'object' ? xx : [xx];
-  }
-  
+      console.log("Tags.create ERROR="+err);
+      Tags.errors.push(err);
+      return null;
+  } // Tags.create()
+   
 }; //Tags
 
-window.Tags = Tags;
-  
-/** A built-in Class for representing HTML with custom tags.
- *
- * <p>Use the XML representation of &lt;view&gt; tags inside &lt;style&gt; tags
- *    or use Tags.create() to instantiate View objects.</p>
- *
- * <p>This is the heart of the Tags Framework. Instantiate this
- *    to create structures that shadow the corresponding HTML
- *    structures.</p>
- *
- * <p>To use the View class, use a 'tag' attribute that is the name
- *    of any HTML tag or the tag name of a custom tag which is a class
- *    that extends View and implements a custom tag.</p>
- *
- * <p>The life cycle of a View object involves:</p>
- * <ul>
- *  <li>Instantiate - Use XML or Tags.create()</li>
- *  <li>Render - Invoke view.render() - Optional for static HTML</li>
- *  <li>Attach to the DOM - Use jQuery on the result from view.render() (unless it is static HTML)</li>
- *  <li>Activate - Attach event handlers - optional if no event handlers needed</li>
- * </ul>
- *
- * @class
- */
-var View = Tags.define({
-  tag:'view',
-  extend:'class',
+var Root = function() {};
 
-  /** Function to initialize the instance from the config value.
-   *  This is called automatically by the Tags Framework infrastructure.
-   *
-   * @memberof View
-   * @instance
-   * @param {object} config Contains key:value pairs used to init the instance
-   */
-  init:function(config) {
+//## type Root
+//
+//This contains the low-level processing shared by all Tag objects. If a define()
+//method specifies no 'extend' attribute, it will default to extend this type.
+//
+//<br/>
+//
+Tags.extendProto(Root.prototype, {
+
+  tag:'root',
+  
+//### method root.initialize()
+//
+//arguments:
+//
+//* config - the config object specifying attributes to be copied to the instantiated object
+//
+//* parent - optional parent argument from Tags.create()
+//
+//Function to initialize the instance from the config value. This is called 
+//automatically by the Tags Framework infrastructure when Tags.create() is called. 
+//Override this method
+//if type-specific initialization is required, but be sure to invoke this.super()
+//from the overridding method.
+//
+  initialize: function(config,parent) {
+    if (!this.parent && parent) this.parent = parent;
     for (var key in config) {
-      this[key] = config[key];
+      var val = config[key];
+      key = key.toString().trim();
+      if (key.substr(0,4) === 'ref-') {
+        var name = key.substr(4);
+        var path = val;
+        var self = this;
+        if (path.length > 0 && path.charAt(0) === '.') {
+          Tags.refFrom(self,path.substr(1),this,name,function(name,val) {self[name] = val;});
+        } else {
+          Tags.refFrom(Tags.ns,path,this,name,function(name,val) {self[name] = val;});
+        }
+      } else {
+        this[key] = val;
+      }
     }
-    this.on = this.on || {};   
+    if (this.id) {
+      if (this.id.substr(0,8) === '.parent.') {
+        this.id = parent.id+this.id.substr(7);
+      }
+      Tags.ns[this.id] = this;
+      console.log('ID='+this.id+' calling Tags.assignTo ...');
+      Tags.assignTo(Tags.ns,this.id,this);
+    }
+    if (this.expectedAttrs) {
+      for (var key in this.expectedAttrs) {
+        if (!this[key]) log.debug("Tag "+this.tag+" missing expected attribute '"+key+"'");
+      }
+    }
+  },
+
+  //### method root.getId()
+  //
+  //Get the ID, creating one if the object does not have one.
+  // 
+  getId: function() {
+    if (!this.id) {
+      this.id = Tags.uniqueId();
+      Tags.ns[this.id] = this;
+      if (this.$el) this.$el.attr("id",this.id);
+    }
+    return this.id;
+  },  
+  
+  //### method root.dot()
+  //
+  //Convenience method to define an id relative to a tag.
+  //
+  dot: function(label) {
+    return this.getId()+'.'+label;
+  },
+
+  //### method root.super()
+  //
+  //Invoke the overridden method of the caller.
+  //
+  super: function() {
+    var meth = arguments.callee.caller;
+    if (meth._super === undefined) { // check for first super call
+      var proto = this;
+      outer: while (proto) {
+        for (var methName in proto) {
+          if (proto[methName] === meth) {
+            proto = proto.constructor.prototype;
+            meth._super = proto[methName] || null;
+            break outer;
+          }
+        }
+        proto = proto.constructor.prototype;
+      }
+    }
+    if (meth._super) return meth._super.apply(this,arguments);
+  },
+
+
+  //internal
+  assign: function(path,val) {
+    Tags.assignTo(this,path,val);
   },
   
-  /** Return a jQuery object that is a DOM element for the HTML represented by this object
-   *
-   * <p>This invokes renderText internally. If you need to override the render
-   *    functionality it is best to override the renderText() method rather than
-   *    this one.</p>
-   *
-   * <p>This method recursively renders nested content. Invoke it as this._super()
-   *    from the overriding method to painlessly render nested content.</p>
-   *
-   * @memberof View
-   * @instance
-   * @return {jQuery} A DOM element for the rendered HTML
-   */ 
+  //internal
+  ref: function(path,name,callback) {
+    return Tags.refFrom(this,path,this,name,callback);
+  }
+  
+});
+
+//Manually register the 'root' type with the Tags framework.
+Root.prototype.constructor = null;
+Tags.protoMap['ROOT'] = Root;
+Tags.Root = Root;
+
+//## type View
+//
+//> A built-in type for handling HTML tags. Every HTML5 tag is a Tag type that
+//> extends View. This means you can use arbitrary HTML5 tags and use them to
+//> generate HTML. You can also define your own View extensions and mix them
+//> with the standard HTML5 View objects.
+//
+//The life cycle of a View object involves:
+//
+//* Instantiate - Use XML or Tags.create()
+//
+//* Render - Invoke view.render() - Optional for static HTML
+//
+//* Attach to the DOM - Use jQuery on the result from view.render() (unless it is static HTML)
+//
+//* Activate - Attach event handlers - optional if no event handlers needed
+//
+//<br/>
+//
+
+var viewInitCount = 0;
+
+var View = Tags.define({
+  tag:'view',
+  extend:'root',
+  isView: true,
+  defaultOptions: {tag:true,content:true},
+  
+//### method view.initialize()
+//
+// see root.initialize()
+  initialize: function(config,parent) {
+    viewInitCount++;
+    Tags.proto('root').initialize.apply(this,arguments);
+    this.attrs || (this.attrs = {});
+    var options = this.options || {};
+    for (var key in config) {
+      var val = config[key];
+      var type = typeof val;
+      key = key.toString().trim();
+      if (   (type == 'string' || type == 'number' || type == 'boolean') 
+          && !this.defaultOptions[key] && !options[key]) {
+        this.attrs[key] = val;
+      }
+    }
+  },
+  
+//### method $()
+//
+//Convenient short-cut for this.$el.find(selector).
+//
+  $:function(selector) {
+    return this.$el.find(selector);
+  },
+  
+//### method view.render()
+//
+// Render an HTML DOM representation of the tag and return it as a jQuery object
+//
+// This method recursively renders nested content. Invoke it as this.prototype._super()
+// from the overriding method to painlessly render nested content.
+//
   render: function() {
-    this.$el = $(this.renderText());
+    var el = document.createElement(this.htmlTag || this.tag);
+    this.$el = $(el);
+    for (var key in this.attrs) {
+      el.setAttribute(key,this.attrs[key]);
+    }
+    if (this.content) {
+      if (typeof this.content == 'string') {
+        this.$el.append(document.createTextNode(this.content));
+      } else if ($.isArray(this.content)) {
+        for (var n=0; n<this.content.length; n++) {
+          var child = this.content[n];
+          if (Tags.isTag(child) && child.isView) {
+            this.$el.append(child.render());
+          } else if (typeof child == 'string') {
+            this.$el.append(document.createTextNode(child));
+          }
+        }
+      } else if (Tags.isTag(this.content)) {
+        if (this.content.isView) this.$el.append(this.content.render());
+      } else {
+        var text = this.content;
+        this.$el.text(text);
+      }
+    }
     return this.$el;
   },
   
-  /** Return a string that is the XML represented by this object.
-   *
-   *  <p>Custom tags that inherit from View should override this.</p>
-   *
-   * <p>This method recursively calls itself to render nested content. Invoke it as this._super()
-   *    from the overriding method to painlessly render nested content.</p>
-   *
-   * @memberof View
-   * @instance
-   * @return {string} Text of the rendered HTML
-   */
-  renderText: function() {
-    return this.renderAs(this.htmlTag || this.tag);
-  },
-
-  /** Convenience method used by renderText() to render HTML for a specific tag name.
-   *
-   * <p>Typical use of this function would be inside a function overriding renderText().
-   *    It would perform custom processing on attributes and content and then invoke
-   *    Tags.renderAs() to do all the actual rendering work.</p>
-   *
-   * @memberof View
-   * @instance
-   * @param {string} tag The tag name of the HTML tag to be rendered
-   * @return {string} Text of the rendered HTML
-   */
-  renderAs: function(tag) {
-    var context = this.renderOpen(tag);
-    this.renderBody(context);
-    this.renderClose(context);
-    return context.buf;
-  },
-  
-  renderOpen: function(tag) {
-    var context = {buf:"<",first:true,tag:tag};    
-    context.buf += tag;
-    if (!this.id) {
-      this.id = "tag-"+Tags.nextInSequence();
-//        log.debug("renderOpen id="+this.id+" seq="+Tags.sequentialNumber);
-    }
-    for (var key in this) {
-      if (!key) continue;
-      var ch = key.charAt(0);
-      if ((ch < 'a' || ch > 'z') && (ch < 'A' || ch > 'Z')) continue;
-      if (key === 'tag' || key === 'extend') continue;
-      var val = this[key];
-      if (val === null) continue;
-      var type = typeof val;
-      if (type == 'string' || type == 'number' || type == 'boolean') {
-        context.buf += " "+key+"='"+val+"'";
-//          log.debug(" VAL["+key+"]="+val);
-      }
-    }
-    return context;
-  },
-  
-  renderBody: function(context) {
-    if (this.content) {
-	    var content = Tags.asArray(this.content);
-	    for (var n in content) {
-	      this.addContentItem(context,content[n]);
-	    }
-	  }
-  },
-  
-  renderClose: function(context) {
-    if (context.first) {
-      context.buf += "/>";
-    } else {
-      context.buf += "</"+context.tag+">";
-    }
-  },
-  
-  addContentItem: function(context, item) {
-    if (context.first) {
-      context.first = false;
-      context.buf += ">";
-    }
-    if (Tags.isTag(item)) {
-      context.buf += item.renderText();
-    } else if (typeof item == 'object') {
-    } else {
-      context.buf += item;
-    }
-  },
-  
-  /** Add content to the View object.
-   *
-   * <p>Apply Tags.create() to the contentToAdd parameter and add the
-   *    result to the content attribute of this object.
-   *
-   * <p>If contentToAdd is a non-array object, the content attribute is
-   *    expected to be an object. If the content attribute is null or
-   *    undefined, that is OK, because then it will be turned into {}.
-   *    The key:value pairs in contentToAdd will be added to the content object.
-   *    Each value is processed with Tags.create() and that is the value
-   *    added to content.</p>
-   *
-   * <p>Otherwise the content attribute is expected to be an array
-   *    or something we can turn into an array. String, number or boolean value x
-   *    will be turned into [x]. Null or undefined will be turned into [].
-   *    Then the contentToAdd value will be processed with Tags.create() and
-   *    that value pushed onto the content attribute or
-   *    if contentToAdd is an array, each of its members will be evaluated
-   *    with Tags.create() and pushed onto content.
-   *
-   * @memberof View
-   * @instance
-   * @param {any} contentToAdd The content to be added to the 'content' attribute
-   */
+  //### method addContent()
+  //
+  //arguments:
+  //
+  //* contentToAdd - this is the content to add
+  //
+  //A single value, object or array is expected. The item (or each item in the
+  //array) is passed to Tags.create() and the result is added to the content of
+  //the object.
+  //
   addContent: function(contentToAdd) {
+    this.content = this.content || [];
+    if (!$.isArray(this.content)) this.content = [this.content];
     if ($.isArray(contentToAdd)) {
-      this.content = this.content || [];
-      if (!$.isArray(this.content)) this.content = [this.content];
       for (var n=0; n<contentToAdd.length; n++) {
-        this.content.push(Tags.create(contentToAdd[n]));
-      }
-    } else if (typeof contentToAdd == 'object') {
-      this.content = this.content || {};
-      for (var key in contentToAdd) {
-        this.content[key] = Tags.create(contentToAdd[key]);
+        this.content.push(Tags.create(contentToAdd[n],this));
       }
     } else if (contentToAdd) {
-      if ($.isArray(this.content)) {
-        this.content.push(Tags.create(contentToAdd));
-      } else if (this.content) {
-        this.content = [this.content,Tags.create(contentToAdd)];
-      } else {
-        this.content = Tags.create(contentToAdd);
+      this.content.push(Tags.create(contentToAdd,this));
+    }
+    Tags.resolveFixups();
+  },
+
+  //### method view.insertContent()  
+  //
+  //arguments:
+  //
+  //* index - the index of where in the content, the new content is to be inserted
+  //
+  //* contentToAdd - this is the content to add
+  //
+  //This works like addContent() except that an offset into the content[] array can
+  //be specified.
+  //
+  //<br/>
+  insertContent: function(index, contentToAdd) {
+    this.content = this.content || [];
+    if (!$.isArray(this.content)) this.content = [this.content];
+    if ($.isArray(contentToAdd)) {
+      for (var n=0; n<contentToAdd.length; n++) {
+        this.content.splice(index,Tags.create(contentToAdd[n],this),0);
+        index++;
       }
+    } else if (contentToAdd) {
+      this.content.splice(index,Tags.create(contentToAdd,this),1);
+    }
+    Tags.resolveFixups();
+  },    
+  
+  //### method view.refresh()
+  //
+  // Go through this.content and make sure every entry has been rendered.
+  // Call this method after doing a series of calls to view.addContent()
+  // on an object that has already been rendered.
+  //
+  refresh:function() {
+    var content = this.content || [];
+    if (! $.isArray(content)) content = [content];
+    var base = null;
+    for (var n=0; n<content.length; n++) {
+      var item = content[n];
+      if (!Tags.isTag(item)) continue;
+      if (!item.$el) {
+        var el = item.render();
+        if (base) {
+          base.append(el);
+        } else {
+          this.$el.prepend(el);
+        }
+        item.activate();
+      }
+      base = item.$el;
     }
   },
   
-  /** Determine if the component has the value in its list of classes.
-   *
-   * @memberof View  
-   * @instance
-   * @param {string} theClass... the class to be tested
-   * @return {boolean} True if the class is present, otherwise false
-   */
+  //### method view.hasClass()
+  //
+  //arguments:
+  //
+  //* theClass - the class to check for
+  //
+  //Determine if the specified class string is in the objects 'class' attribute.
+  //
   hasClass: function(theClass) {
+    if (!this['class']) return false;
     var classList = this['class'].split(' ');
     for (var n=0; n<classList.length; n++) if (classList[n] == theClass) return true;
     return false;
   },
       
-  /** Convenience method to add a string to the 'class' attribute of this object.
-   *
-   *  <p>This treats the 'class' attribute like a Set of strings where members are
-   *     in a space separated list. This will add one or more members to that set,
-   *     avoiding duplicate entries.</p>
-   *
-   *  <p>This can be called either before or after a DOM element has been created.
-   *     for this object. If one has been created, it will be in this.$el. If
-   *     this.$el exists, then the updated class value will be applied to it.
-   *     Otherwise, the updated class value will be available to be applied to
-   *     the DOM element when it is created.</p>
-   *
-   * @memberof View
-   * @instance
-   * @param {string} class... A variable argument list of classes
-   */
+//### method view.addClass()
+//
+//arguments:
+//
+//* theClass - the class to add to the object's 'class' attribute
+//
   addClass: function() {
     var n;
-//      log.debug("addClass args.len="+arguments.length);
-    var originalClass = this['class'];
     var classes = {};
-    if (this['class']) {
-      var classList = this['class'].split(' ');
+    if (this.attrs['class']) {
+      var classList = this.attrs['class'].split(' ');
       for (n=0; n<classList.length; n++) classes[classList[n]] = true;
     }
     if (arguments.length > 0) {
@@ -576,34 +693,23 @@ var View = Tags.define({
       if (classText) classText += ' ';
       classText += key;
     }
-    this['class'] = classText;
+    this.attrs['class'] = classText;
     if (this.$el) this.$el.attr('class',classText);
-//      log.debug("addClass "+originalClass+" --> "+this['class']);
   },
    
-  /** Convenience method to remove a string to the 'class' attribute of this object.
-   *
-   *  <p>This treats the 'class' attribute like a Set of strings where members are
-   *     in a space separated list. This will remove one or more members from that set.
-   *     strings matching the string values in the class parameters will be removed</p>
-   *
-   *  <p>This can be called either before or after a DOM element has been created.
-   *     for this object. If one has been created, it will be in this.$el. If
-   *     this.$el exists, then the updated class value will be applied to it.
-   *     Otherwise, the updated class value will be available to be applied to
-   *     the DOM element when it is created.</p>
-   *
-   * @memberof View
-   * @instance
-   * @param {string} class... A variable argument list of classes
-   */
+//### method view.removeClass()
+//
+//arguments:
+//
+//* theClass - the class to remove
+//
+//Remove the class from the object's 'class' attribute.
+//
   removeClass: function() {
     var n;
-//      log.debug("removeClass args.len="+arguments.length);
-    var originalClass = this['class'];
     var classes = {};
-    if (this['class']) {
-      var classList = this['class'].split(' ');
+    if (this.attrs['class']) {
+      var classList = this.attrs['class'].split(' ');
       for (n=0; n<classList.length; n++) classes[classList[n]] = true;
     }
     if (arguments.length > 0) {
@@ -617,9 +723,8 @@ var View = Tags.define({
       if (classText) classText += ' ';
       classText += key;
     }
-    this['class'] = classText;
+    this.attrs['class'] = classText;
     if (this.$el) this.$el.attr('class',classText);
-//      log.debug("removeClass "+originalClass+" --> "+this['class']);
   },
    
   walk: function(callback) {
@@ -631,80 +736,166 @@ var View = Tags.define({
     }
   },
   
-  /** Apply event handlers and take other actions that need to be delayed until the View is added to the DOM.
-   *
-   * <p>An overridden activate() method is a good place to define and attach event handlers. This
-   *    View object provides a convenient place to save information used by handlers.</p>
-   *
-   * <p>Invoke this function of the View class using this._super() in order to make sure
-   *    that activate() is called on nested content.</p>
-   *
-   * <p>A side effect of this function is to make sure that this.$el is set. It will normally
-   *    be set by the render() method, but if render() is not called (i.e., it is being used
-   *    with static HTML), then activate() will attempt to set this.$el and thus associate
-   *    the object with the static HTML by first checking for the this.el attribute. If found,
-   *    it will be used as a jQuery selector to find the DOM object to use. If not found, it
-   *    will check for the this.id attribute. If found, it will be assumed to be the same as
-   *    the ID attribute of the DOM element and used to locate the DOM element by ID.</p>
-   *
-   * <p>This function processes the this.on attribute as a plain object containing
-   *    eventName:eventHandler pairs to be attached. The eventName can be any legal event
-   *    name.</p>
-   *
-   * @memberof View
-   * @instance
-   */
+  checkEl: function() {
+    if (!this.$el && (this.el || this.id)) {
+      log.debug("checkEl FIXING tag="+this.tag+" el="+(this.el || this.id));
+      this.$el = $(this.el || "#"+this.id);
+    }
+  },
+    
+//### method view.activate method
+//
+//Apply event handlers and take other actions that need to be delayed until the View is added to the DOM.
+//
+//An overridden activate() method is a good place to define and attach event handlers. This
+//View object provides a convenient place to save information used by handlers.
+//
+//Invoke this function of the View class using this._super() in order to make sure
+//that activate() is called on nested content.
+//
+//A side effect of this function is to make sure that this.$el is set. It will normally
+//be set by the render() method, but if render() is not called (i.e., it is being used
+//with static HTML), then activate() will attempt to set this.$el and thus associate
+//the object with the static HTML by first checking for the this.el attribute. If found,
+//it will be used as a jQuery selector to find the DOM object to use. If not found, it
+//will check for the this.id attribute. If found, it will be assumed to be the same as
+//the ID attribute of the DOM element and used to locate the DOM element by ID.
+//
+//This function processes the this.on attribute as a plain object containing
+//eventName:eventHandler pairs to be attached. The eventName can be any legal event
+//name.
+//
   activate: function() {
-//      log.debug("ACTIVATE1 haveEl="+!!this.$el+" id="+this.id);
-    if (!this.$el && this.id) this.$el = $(this.el || "#"+this.id);
-//      log.debug("ACTIVATE2 haveEl="+!!this.$el+" id="+this.id);
     if (this.on) {
+      var self = this;
       for (var key in this.on) {
-//          log.debug("ON key="+key);
-        this.$el.on(key,this.on[key]);
+        if (!this.$el) throw "$el NOT FOUND";
+        (function(theKey) {
+          var meth = self.on[theKey];
+          self.$el.on(theKey,function(event) {
+            console.log("on."+theKey);
+            meth.call(self,event);
+          });
+        })(key);
       }
     }
-    if (!this.id) {
-      this.id = 'tag-'+Tags.nextInSequence();
-      this.$el.attr('id',this.id);
-    }
-    Tags.tagsById[this.id] = this;
     if (this.content) {
-      for (var n in this.content) {
-        var item = this.content[n];
-        if (Tags.isTag(item)) item.activate();
+      if ($.isArray(this.content)) {
+        for (var n=0; n<this.content.length; n++) {
+          var item = this.content[n];
+          if (Tags.isTag(item) && item.isView) item.activate();
+        }
+      }
+    } else if (Tags.isTag(this.content)) {
+      this.content.activate();
+    }
+  },
+  
+  //### method view.update()
+  //
+  //arguments:
+  //
+  //* ANY 
+  //
+  //Recursively invoke the update() method on all contained view tags
+  //passing the same arguments passed to this method.
+  //
+  update:function() {
+    if (this.content) {
+      if ($.isArray(this.content)) {
+        log.debug("update ARRAY");
+        for (var n=0; n<this.content.length; n++) {
+          var item = this.content[n];
+          if (Tags.isTag(item) && item.isView) {
+            log.debug("calling item.update tag="+item.tag);
+//            item.update(model);
+            item.update.apply(item,arguments);
+          }
+        }
+      } else if (Tags.isTag(this.content)) {
+        log.debug("update ONE");
+        this.content.update.apply(this.content,arguments);
       }
     }
   }
   
 });
 
-Tags.defaultClass = View;
+//This is the list of standard HTML5 tags that will be implemented
+//as Tag types that extend the 'view' type.
+//
+var htmlTags = [
+  'a','abbr','acronym','address','applet','area','article','aside','audio',
+  'b','base','basefont','bdi','bdo','big','blockquote','body','br','button',
+  'canvas','caption','center','cite','code','col','colgroup',
+  'datalist','dd','del','details','dfn','dialog','dir','div','dl','dt',
+  'em','embeded',
+  'fieldset','figcaption','figure','figure','font','footer','form','frame','frameset',
+  'head','header','h1','h2','h3','h4','h5','h6','hr','html',
+  'i','iframe','img','input','ins',
+  'kbd','keygen',
+  'label','legend','li','link',
+  'main','mark','menu',
+  'menuitem','meta','meter',
+  'nav','noframes','noscript','object','ol','option','optgroup','output',
+  'p','param','pre','progress',
+  'q',
+  'rp' ,'rt','ruby',
+  's','samp','script','section','select','small','source','span','stike','strong','style','sub','summary','sup',
+  'table','tbody','td','textarea','tfoot','th','thead','time','title','tr','track','tt',
+  'u','ul',
+  'var','video',
+  'wbr'
+];
+  
+//Define a new type for every HTML5 tag.
+for (var n=0; n<htmlTags.length; n++) {
+  var htmlTag = htmlTags[n];
+  Tags.define({tag:htmlTag, extend:'view'});
+}
 
-// Apply any custom-tags found in script tags with type='text/custom-tag'  
+//Apply any custom-tags found in script tags with type='text/tags'  
 
 $(document).ready(function() {
   log.debug("READY");
   log.debug("TAGS ready script.len="+$("script").length);
-  log.debug("TAGS ready LEN="+$("script[type='text/custom-tags']").length);
-  $("script[type='text/custom-tags']").each(function() {
+  log.debug("TAGS ready LEN="+$("script[type^='text/tags']").length);
+  var scriptList = [];
+  //Go through script tags and instantiate all of the custom tags
+  $("script[type='text/tags']").each(function() {
     var scriptTag = $(this);
-    var lastTag = scriptTag;
     var wrapper = Tags.create("<wrapper>"+scriptTag.html()+"</wrapper>");
-    log.debug("SCRIPT ...");
+    var tagList = [];
+    scriptList.push({loc:scriptTag,tags:tagList});
     for (var n=0; n<wrapper.content.length; n++) {
       var tag = wrapper.content[n];
-      if (Tags.isTag(tag)) {
-        log.debug("RENDERING ... id="+(tag.id || "NONE"));
-        lastTag.after(tag.render());
-        tag.activate();
-        log.debug("ACTIVATED id="+(tag.id || "NONE"));
-        lastTag = tag.$el;
-      }
+      if (Tags.isTag(tag)) tagList.push(tag);
     }
   });
-//  log.debug("PARSE TIME="+Tags.parseTime+" WORK TIME="+Tags.workTime);
+  
+  Tags.resolveFixups();
+  
+  //Go through all the custom tags and render them.
+  for (var n=0; n<scriptList.length; n++) {
+    var script = scriptList[n];
+    var loc = script.loc;
+    for (var m=0; m<script.tags.length; m++) {
+      var tag = script.tags[m];
+      if (tag.isView) {
+        loc.after(tag.render([]));
+        loc = tag.$el;
+      }
+    }
+  }
+  //Go through all the custom tags and activate any with activate() method.
+  for (var n=0; n<scriptList.length; n++) {
+    var script = scriptList[n];
+    var loc = script.loc;
+    for (var m=0; m<script.tags.length; m++) {
+      var tag = script.tags[m];
+      if (tag.activate) tag.activate();
+    }
+  }
 });
 
-//})(jQuery);
-  
+//

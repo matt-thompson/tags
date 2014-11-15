@@ -1,0 +1,12 @@
+/* CSS for the Layout example
+*/
+
+/* Customizable styles related to tabs: */
+.tabRow {position:relative; overflow:hidden; height:26px;}
+.tab {position:relative; overflow:hidden; float:left; padding:2px 5px 2px 5px; background-color:#ddd;
+      border:solid thin black; border-color:black; border-radius:4px 4px 0px 0px; height:20px;
+      cursor:pointer;}
+.tab:hover {background-color:#eff;}
+.tabSpacer {border:solid thin black; border-color:#eee #eee black #eee;float:left;}
+.tab.selected {background-color:#eee; border:solid thin black; border-color: black black #eee black;}
+.endTab {position:relative; overflow:hidden; float:clear; border:solid thin black; border-color:#eee #eee black #eee;}

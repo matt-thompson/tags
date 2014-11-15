@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<!--
+//## phonecat/index.html
+//
+// This implements a catalog of Mobile phone products. It consists of
+// two views, one shows a list of products with controls for filtering
+// and sorting and the other shows the details of a specific product.
+//
+// This example is of interest because it is featured in an
+// angular.js tutorial and a backbone.js tutorial. You can compare how
+// these three frameworks are used to solve the same problem. 
+//-->
+<html lang='en'>
+    <head>
+        <!-- Setup is simple. Just include the required Javascript and Stylesheets. -->
+        <meta charset='utf-8' />
+        <title>Phone Catalogue</title>
+        <link rel="stylesheet" href="app.css" />
+        <link rel="stylesheet" href="../css/bootstrap.css" />
+        <!-- JQuery is always required -->
+        <script src="../js/jquery.js"></script>
+        <!-- Underscore.js and path.js are required only for this app -->
+        <script src="../js/underscore.js"></script>
+        <script src="../js/path.js"></script>
+        <!-- tags.js is the code for the Tags framework -->
+        <script src="../../tags.js"></script>
+        <!-- app.js is the code specific to this application -->
+        <script src="app.js"></script>
+    </head>
+    <body>
+      <!-- What passes for static HTML is contained in a `<script>` tag
+      //   with type of 'text/tags'. The Tags framework instantiates the
+      //   tags and invokes render() and activate() methods at the appropriate
+      //   time.
+      //-->
+      <script type='text/tags'>
+        <!-- The `<router>` tag does not generate HTML. We include it here so it
+        //   will be instantiated. It uses path.js and defines the routes.
+        //-->
+        <router id='router'/>
+        
+        <!-- First we define the Phonelist View. It is a standard `<div>` tag, but
+        // contains some custom tags. The dotted 'id' attribute will allow us to
+        // reference the Phonelist View from the 'router' object.
+        //-->
+        <div id='router.phoneListView' style='position:relative;'>
+          <div style='width:240px; height:100%; padding:2px 4px 2px 10px;'>
+            <div>Search:</div>
+            <searchField id='router.searchField' class='query' ref-target='router.phoneList'/>
+            <div>Sort By:</div>
+            <modeField id='router.modeField' class='sort' ref-target='router.phoneList'>
+              <option value='name' selected='selected'>Alphabetical</option>
+              <option value='age'>Newest</option>
+            </modeField>
+          </div> 
+          <div style='position:absolute; top:0px; left:240px; min-width:400px; right:0px; height:100%;'>
+            <phoneList id='router.phoneList' url='phones/phones.json' class='phones'/>
+          </div>
+        </div>
+        
+        <!-- This defines the Phone Detail View. It is disabled to start with
+        //  but will be populated with a specific product and enabled later.
+        //  The Phone Detail View renders as a `<div>`, but is implemented
+        //  as a custom tag so we can give it an activate() method. It contains
+        //  a lot of custom tags that provide shorthand for more complex HTML
+        //  sequences, thus reducing the amount of redundant code.
+        //
+        -->
+        <phoneDetail id='router.phoneDetailView' style='display:none'>
+          <div id='router.phoneDetailView.mainImage' class='phone-images'></div>
+          <h1 id='router.phoneDetailView.phoneTitle'></h1>
+          <p id='router.phoneDetailView.phoneDescription'></p>
+          <ul id='router.phoneDetailView.phoneThumbs' class='phone-thumbs'></ul>
+          <ul id='router.phoneDetailView.phoneSpecs' class='specs'>
+            <detailGroup label='Availability and Networks'>
+              <detail label='Availability' key='availability'/>
+            </detailGroup>
+            <detailGroup label='Battery' key='battery'>
+              <detail label='Type' key='type'/>
+              <detail label='Talk Time' key='talkTime'/>
+              <detail label='Standby' key='standbyTime'/>
+            </detailGroup>
+            <detailGroup label='Storage and Memory' key='storage'>
+              <detail label='RAM' key='ram'/>
+              <detail label='Internal Storage' key='flash'/>
+            </detailGroup>
+            <detailGroup label='Connectivity' key='connectivity'>
+              <detail label='Network Support' key='cell'/>
+              <detail label='WiFi' key='wifi'/>
+              <detail label='Bluetooth' key='bluetooth'/>
+              <detailCheckmark label='Infrared' key='infrared'/>
+              <detailCheckmark label='GPS' key='gps'/>
+            </detailGroup>
+            <detailGroup label='Android' key='android'>
+              <detail label='OS Version' key='os'/>
+              <detail label='UI' key='ui'/>
+            </detailGroup>
+            <detailGroup label='Size and Weight' key='sizeAndWeight'>
+              <detailList label='Dimensions' key='dimensions'/>
+              <detail label='Weight' key='weight'/>
+            </detailGroup>
+            <detailGroup label='Display' key='display'>
+              <detail label='Screen size' key='screenSize'/>
+              <detail label='Screen resolution' key='screenResolution'/>
+              <detailCheckmark label='Touch screen' key='touchScreen'/>
+            </detailGroup>
+            <detailGroup label='Hardware' key='hardware'>
+              <detail label='CPU' key='cpu'/>
+              <detail label='USB' key='usb'/>
+              <detail label='Audio' key='audioJack'/>
+              <detailCheckmark label='FM Radio' key='fmRadio'/>
+              <detailCheckmark label='Accelerometer' key='accelerometer'/>
+            </detailGroup>
+            <detailGroup label='Camera' key='camera'>
+              <detail label='Primary' key='primary'/>
+              <detailJoin label='Features' key='features'/>
+            </detailGroup>
+            <detailGroup label='Additional Features'>
+              <detail key='additionalFeatures'/>
+            </detailGroup>
+          </ul>
+        </phoneDetail>
+      </script>
+    </body>
+</html>

@@ -1,0 +1,229 @@
+<!DOCTYPE html>
+
+<html>
+<head>
+  <title>TITLE</title>
+  <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+  <meta name="viewport" content="width=device-width, target-densitydpi=160dpi, initial-scale=1.0; maximum-scale=1.0; user-scalable=0;">
+  <link rel="stylesheet" href="styles/custom.css" />
+  <script src="js/jquery.js"></script>
+  <script src="js/highlight.pack.js"></script>
+  <script src="js/showdown.js"></script>
+  <style>
+div.code-part {width:99%;}
+div.comments-part {width:99%;}
+#container {position:relative;}
+#comments-container {position:absolute; left:0px; width:400px;};
+#code-container {background-color:#eef; position:absolute; left:405px; right:0px;}
+  </style>
+  <script type='text/javascript'>
+    var QueryString = function () {
+      // This function is anonymous, is executed immediately and 
+      // the return value is assigned to QueryString!
+      var query_string = {};
+      var query = window.location.search.substring(1);
+      var vars = query.split("&");
+      for (var i=0;i<vars.length;i++) {
+        var pair = vars[i].split("=");
+        // If first entry with this name
+        if (typeof query_string[pair[0]] === "undefined") {
+          query_string[pair[0]] = pair[1];
+          // If second entry with this name
+        } else if (typeof query_string[pair[0]] === "string") {
+          var arr = [ query_string[pair[0]], pair[1] ];
+          query_string[pair[0]] = arr;
+          // If third or later entry with this name
+        } else {
+          query_string[pair[0]].push(pair[1]);
+        }
+      } 
+      return query_string;
+    } ();
+
+  
+    var splitUp = function(text) {
+      var lines = text.split('\n');
+      var result = [];
+      var section = 1;
+      var code = '';
+      var comments = '';
+      console.log("SPLIT lines="+lines.length);
+      for (var n=0; n<lines.length; n++) {
+        var line = lines[n];
+        if (line.trim().startsWith('//')) {
+          var m = line.indexOf('//');
+//          console.log('COMMENT section='+section+' code.len='+code.length+' cmt.len='+comments.length+' m='+m+' line='+line);
+          if (code.length > 0) {
+            code = code.replace(/[&]/g,'&amp;').replace(/[<]/g,'&lt;').replace(/[>]/g,'&gt;');
+            console.log("CODE["+section+"]="+code);
+//            result.push({comments:comments+'('+section+')',code:code});
+            result.push({comments:comments,code:code});
+            section++;
+            comments = '';
+            code = '';
+          }
+          comments += line.substr(m+2)+'\n';
+        } else {
+          code += line + '\n';
+        }
+      }
+      console.log("CODE-LAST["+section+"]="+code);
+      code = code.replace(/[&]/g,'&amp;').replace(/[<]/g,'&lt;').replace(/[>]/g,'&gt;');
+      result.push({comments:(comments || '')+'\n',code:code || ' '});
+      return result;
+    };
+    
+    var splitHtml = function(text) {
+      var lines = text.split('\n');
+      var result = [];
+      var section = 1;
+      var code = '';
+      var comments = '';
+      console.log("SPLIT lines="+lines.length);
+      var inComment = false;
+      for (var n=0; n<lines.length; n++) {
+        var line = lines[n];
+        if (line.trim().startsWith('<!--')) {
+          inComment = true;
+          var m = line.indexOf('<!--');
+          if (code.length > 0) {
+            code = code.replace(/[&]/g,'&amp;').replace(/[<]/g,'&lt;').replace(/[>]/g,'&gt;');
+            console.log("CODE["+section+"]="+code);
+            result.push({comments:comments,code:code});
+            section++;
+            comments = '';
+            code = '';
+          }
+          var k = line.lastIndexOf('-->');
+          if (k >= 0) {
+            line = line.substr(0,k);
+            inComment = false;
+          }
+          comments += '\n'+line.substr(m+4);
+        } else if (inComment) {
+          var m = line.indexOf('//');
+          var k = line.lastIndexOf('-->');
+          if (k >= 0) {
+            line = line.substr(0,k);
+            inComment = false;
+          }
+          comments += '\n'+line.substr(m+2);
+        } else {
+          code += line + '\n';
+        }
+      }
+      console.log("CODE-LAST["+section+"]="+code);
+      code = code.replace(/[&]/g,'&amp;').replace(/[<]/g,'&lt;').replace(/[>]/g,'&gt;');
+      result.push({comments:(comments || '')+'\n',code:code || ' '});
+      return result;
+    };
+    
+    var splitCss = function(text) {
+      var lines = text.split('\n');
+      var result = [];
+      var section = 1;
+      var code = '';
+      var comments = '';
+      console.log("SPLIT lines="+lines.length);
+      var inComment = false;
+      for (var n=0; n<lines.length; n++) {
+        var line = lines[n];
+        if (line.trim().startsWith('/*')) {
+          inComment = true;
+          var m = line.indexOf('/*');
+          if (code.length > 0) {
+            code = code.replace(/[&]/g,'&amp;').replace(/[<]/g,'&lt;').replace(/[>]/g,'&gt;');
+            console.log("CODE["+section+"]="+code);
+            result.push({comments:comments,code:code});
+            section++;
+            comments = '';
+            code = '';
+          }
+          if (line.trim().endsWith('*/')) {
+            line = line.substr(0,line.length - 2);
+            inComment = false;
+          }
+          comments += '\n'+line.substr(m+2);
+        } else if (inComment) {
+          var m = line.indexOf('//');
+          if (line.trim().endsWith('*/')) {
+            line = line.substr(0,line.length - 2);
+            inComment = false;
+          }
+          comments += '\n'+line.substr(m+2);
+        } else {
+          code += line + '\n';
+        }
+      }
+      console.log("CODE-LAST["+section+"]="+code);
+      code = code.replace(/[&]/g,'&amp;').replace(/[<]/g,'&lt;').replace(/[>]/g,'&gt;');
+      result.push({comments:(comments || '')+'\n',code:code || ' '});
+      return result;
+    };
+    
+    var alignParts = function(parts) {
+      var top = 0;
+      for (var n=0; n<parts.length; n++) {
+        var part = parts[n];
+        var ht0 = part.commentsEl.height();
+        var ht1 = part.commentsEl.outerHeight(true);
+        var ht2 = part.codeEl.height();
+        var ht = ht2 > ht1 ? ht2 : ht1;
+        console.log('ALIGN['+n+'] top='+top+' ht0='+ht0+' ht1='+ht1+' ht2='+ht2+' ht='+ht);
+        part.commentsEl.css({position:'absolute',top:top+'px',height:ht+'px'});
+        part.codeEl.css({position:'absolute',top:top+'px',height:ht+'px'});
+        top += ht;
+      }
+      return top;
+    };
+        
+      
+    
+    $(document).ready(function() {
+      console.log("READY");
+      var converter = new Showdown.converter();
+      var top = 0;
+      var url = QueryString.source;
+      $('title').html(url);
+      console.log("SOURCE="+url);
+      var n = url.lastIndexOf('.');
+      var ext = "text";
+      if (n >= 0) {
+        ext = url.substr(n+1);
+      }
+      $.get(url,function(data) {
+        console.log("GET-DATA="+data);
+        var commentsContainer = $("#comments-container");
+        var codeContainer = $("#code-container");
+        var parts = [];
+        if (ext === 'js') {
+          parts = splitUp(data);
+        } else if (ext === 'html') {
+          parts = splitHtml(data);
+        } else if (ext === 'css') {
+          parts = splitCss(data);
+        }
+        for (var n=0; n<parts.length; n++) {
+          var part = parts[n];
+          part.commentsEl = $("<div class='comments-part' data-section='n'>"+converter.makeHtml(part.comments)+"</div>");
+          part.codeEl = $("<div class='code-part' data-section='n'><pre><code class='"+ext+"'>"+part.code+"</code></pre></div>");
+          commentsContainer.append(part.commentsEl);
+          codeContainer.append(part.codeEl);
+        }
+        $('pre code').each(function(i,block) {
+          hljs.highlightBlock(block);
+        });
+        var ht = alignParts(parts);
+        commentsContainer.css('height',ht+'px');
+        codeContainer.css('height',ht+'px');
+      },'text');
+    });
+  </script>
+</head>
+<body>
+  <div id='container'>
+    <div id='comments-container'></div>
+    <div id='code-container' style='background-color:#eef; position:absolute; left:405px; right:0px;'></div>
+  </div>
+</body>
+</html>
