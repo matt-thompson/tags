@@ -1,4 +1,4 @@
-// tags.js 0.9.2
+// tags.js 0.9.3
 
 var log = log || {debug:function() {}};
 
@@ -194,12 +194,12 @@ var Tags = {
           
 //### method Tags.define()
 //
-// arguments:
+//> Define a new type which extends another type and can be instantiated using Tags.create().
 //
+// arguments:
+//  
 //* proto a simple object whose attributes will be copied to the prototype
 //  of the type being defined.
-//
-//> Define a new type which extends another type and can be instantiated using Tags.create().
 //
 // The proto parameter is copied into the prototype of the new type. A 'tag'
 // attribute is required and will be used to find the type definition by the Tags.create() method.
@@ -228,9 +228,8 @@ var Tags = {
 //### method Tags.isTag()
 //
 // arguments:
-//
+//  
 //* val the value for which the determination is to be made
-//
 //* tagName an optional comma seaparated list of tag names
 // 
 //Convenience function for determining if a value is a Tag, possibly of a specified type.
@@ -254,9 +253,7 @@ var Tags = {
 //### method Tags.create()
 //
 // arguments:
-//
 //* config the object that specifies the object to be created
-//
 //* parent an optional reference to the object to contain the created object
 //
 //Create a new instance of a Tag type
@@ -387,7 +384,6 @@ Tags.extendProto(Root.prototype, {
 //arguments:
 //
 //* config - the config object specifying attributes to be copied to the instantiated object
-//
 //* parent - optional parent argument from Tags.create()
 //
 //Function to initialize the instance from the config value. This is called 
@@ -608,7 +604,6 @@ var View = Tags.define({
   //arguments:
   //
   //* index - the index of where in the content, the new content is to be inserted
-  //
   //* contentToAdd - this is the content to add
   //
   //This works like addContent() except that an offset into the content[] array can
