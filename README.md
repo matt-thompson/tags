@@ -5,8 +5,8 @@
 
 ## Tags Framework Documentation
 
-* [Introduction](introduction.html) -- Introduction
-* [Annotated Source](showsource.html?source=tags.js) -- Source and API
+* [Introduction](http://randomsoftwareideas.com/tags/introduction.html) -- Introduction
+* [Annotated Source](http://randomsoftwareideas.com/tags/showsource.html?source=http://randomsoftwareideas.com/tags/tags.js) -- Source and API
 * [GitHub](https://github.com/matt-thompson/tags.git) -- The GitHub project
 
 
