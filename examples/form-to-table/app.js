@@ -73,7 +73,7 @@ Tags.define({tag:'field', extend:'view', htmlTag:'div',
   // need to do a bit of cleanup to handle the spacing and alignment of the
   // label and input parts of the field.
   //
-  // Note the the use of $el which is set up by the render() method. We known that
+  // Note the use of $el which is set up by the render() method. We know that
   // by convention, the render() method will have been called before activate() is called
   // so we can rely on $el having been created.
   //

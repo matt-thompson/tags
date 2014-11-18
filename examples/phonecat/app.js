@@ -1,4 +1,8 @@
-
+//# phonecat/app.js
+//
+// Implement custom tags for the Phonecat app.
+//
+//## type View (extension)
 //
 // Extend the View type to have an additional method used by some of 
 // the following types.
@@ -144,8 +148,8 @@ Tags.define({tag:'phoneList', extend:'view', htmlTag:'ul', 'class':'phones',
   
   // Implement the mode change for the `<modeField>` tag.
   // To change mode, we just resort this.content, detach all of
+  // the tag's DOM elements and attach them again in the new order. 
   changeMode:function(mode) {
-    // the tag DOM elements and attach them again in the new order. 
     if (mode === 'age') {
       this.content.sort(function(x,y) {
         return x.model.age - y.model.age;
@@ -157,12 +161,8 @@ Tags.define({tag:'phoneList', extend:'view', htmlTag:'ul', 'class':'phones',
         return xx < yy ? -1 : xx > yy ? 1 : 0;
       });
     }
-    for (var n=0; n<this.content.length; n++) {
-      this.content[n].$el.detach();
-    }
-    for (var n=0; n<this.content.length; n++) {
-      this.$el.append(this.content[n].$el);
-    }
+    for (var n=0; n<this.content.length; n++) this.content[n].$el.detach();
+    for (var n=0; n<this.content.length; n++) this.$el.append(this.content[n].$el);
   }
   
 });
@@ -277,10 +277,10 @@ Tags.define({tag:'detailCheckmark', extend:'detail', htmlTag:'div',
 //
 Tags.define({tag:'detailList', extend:'detail', htmlTag:'div',
   updateModel:function(model) {
+    this.target.$el.empty();
     model = this.super(model);
     if (!model) return null;
     if (!jQuery.isArray(model)) model = [model];
-    this.target.$el.empty();
     for (var n=0; n<model.length; n++) {
       this.target.$el.append($("<div>"+model[n]+"</div>"));
     }

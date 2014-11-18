@@ -7,6 +7,9 @@
 // A Type is a prototype that can be used to instatiate new
 // objects by calling Tags.create().
 //
+
+//
+
 var ENTER_KEY = 13;
 
 //## Todo Type
