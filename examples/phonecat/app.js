@@ -1,4 +1,33 @@
 
+//
+// Extend the View type to have an additional method used by some of 
+// the following types.
+//
+Tags.extend('view', {
+  
+  //### method updateModel(model)
+  //
+  // Allow a structured model to be handled by a structured View.
+  // Each call to this method recursively calls itself on each element
+  // of its content, optionally modifying the model by using 'modelKey'
+  // to select an element from model.
+  //
+  updateModel: function(model) {
+    var content = this.content;
+    if (model && this.modelKey) model = model[this.modelKey];
+    if (content) {
+      if (!jQuery.isArray(content)) content = [content];
+      for (var n=0; n<content.length; n++) {
+        var item = content[n];
+        if (!Tags.isTag(item) || !item.updateModel) continue;
+        item.updateModel(model);
+      }
+    }
+    return model;
+  }
+
+});
+
 //## type PhoneView
 //
 // Instantiate one of these for every phone displayed in the PhoneList view.
@@ -74,7 +103,7 @@ Tags.define({tag:'router', extend:'root',
     });
     
     Path.root("#/phoneList");
-    
+   
     Path.listen();
   }
 });
@@ -91,7 +120,7 @@ Tags.define({tag:'phoneList', extend:'view', htmlTag:'ul', 'class':'phones',
   activate:function() {
     this.super();
     var self = this;
-    $.getJSON(this.url,function(data) {
+    jQuery.getJSON(this.url,function(data) {
       self.$el.empty();
       self.content = [];
       for (var n=0; n<data.length; n++) {
@@ -115,8 +144,8 @@ Tags.define({tag:'phoneList', extend:'view', htmlTag:'ul', 'class':'phones',
   
   // Implement the mode change for the `<modeField>` tag.
   // To change mode, we just resort this.content, detach all of
-  // the tag DOM elements and attach them again in the new order. 
   changeMode:function(mode) {
+    // the tag DOM elements and attach them again in the new order. 
     if (mode === 'age') {
       this.content.sort(function(x,y) {
         return x.model.age - y.model.age;
@@ -149,7 +178,7 @@ Tags.define({tag:'phoneDetail', extend:'view', htmlTag:'section',
   // 
   update:function(phone) {
     var self = this;
-    $.getJSON("phones/"+phone+'.json',function(data) {
+    jQuery.getJSON("phones/"+phone+'.json',function(data) {
       self.mainImage.$el.empty().append($("<img class='phone' src='"+data.images[0]+"'/>"));
       self.phoneTitle.$el.text(data.name);
       self.phoneDescription.$el.text(data.description);
@@ -159,8 +188,42 @@ Tags.define({tag:'phoneDetail', extend:'view', htmlTag:'section',
         self.phoneThumbs.$el.append(liTag.render([]));
         liTag.activate();
       }
-      self.phoneSpecs.update(data);
+      self.phoneSpecs.updateModel(data);
     });
+  }
+});
+
+//## type PhoneImage
+//
+// Display the image for a phone and if it is clicked, make
+// it the Main image.
+//  
+Tags.define({tag:'phoneImage', extend:'view', htmlTag:'li',
+  on: {
+    click:function(e) {
+      $("img",Tags.ns['router.phoneDetailView.mainImage'].$el).attr('src',this.imgSrc);
+    }
+  },
+  render:function() {
+    this.content = Tags.create({tag:'img', src:this.imgSrc},this);
+    return this.super();
+  }
+});
+
+//## type PhoneImage
+//
+// Display the image for a phone and if it is clicked, make
+// it the Main image.
+//  
+Tags.define({tag:'phoneImage', extend:'view', htmlTag:'li',
+  on: {
+    click:function(e) {
+      $("img",Tags.ns['router.phoneDetailView.mainImage'].$el).attr('src',this.imgSrc);
+    }
+  },
+  render:function() {
+    this.content = Tags.create({tag:'img', src:this.imgSrc},this);
+    return this.super();
   }
 });
 
@@ -179,17 +242,7 @@ Tags.define({tag:'detailGroup', extend:'view', htmlTag:'li',
       {tag:'dl', content:originalContent}
     ]);
     return this.super();
-  },
-  
-  // Select the object from the model using the key. If no
-  // key, just use the model. Pass the result on to the nested
-  // content by calling this.super(model).
-  //
-  update:function(model) {
-    if (this.key) model = model[this.key];
-    this.super(model);
-  }
-});
+  }});
 
 //## type Detail
 //
@@ -203,8 +256,8 @@ Tags.define({tag:'detail', extend:'view', htmlTag:'div',
     ]);
     return this.super();
   },
-  update:function(model) {
-    if (this.key) model = model[this.key];
+  updateModel:function(model) {
+    model = this.super(model);
     this.target.$el.text(model);
   }
 });
@@ -213,9 +266,8 @@ Tags.define({tag:'detail', extend:'view', htmlTag:'div',
 //
 // Extract and display boolean information as a check mark or X.
 Tags.define({tag:'detailCheckmark', extend:'detail', htmlTag:'div',
-  update:function(model) {
-    if (this.key) model = model[this.key];
-    this.target.$el.text(model ? '\u2713' : '\u2718');
+  updateModel:function(model) {
+    this.target.$el.text(this.super(model) ? '\u2713' : '\u2718');
   }
 });
     
@@ -224,8 +276,10 @@ Tags.define({tag:'detailCheckmark', extend:'detail', htmlTag:'div',
 // Extract and display a list of items.
 //
 Tags.define({tag:'detailList', extend:'detail', htmlTag:'div',
-  update:function(model) {
-    if (this.key) model = model[this.key];
+  updateModel:function(model) {
+    model = this.super(model);
+    if (!model) return null;
+    if (!jQuery.isArray(model)) model = [model];
     this.target.$el.empty();
     for (var n=0; n<model.length; n++) {
       this.target.$el.append($("<div>"+model[n]+"</div>"));
@@ -239,25 +293,9 @@ Tags.define({tag:'detailList', extend:'detail', htmlTag:'div',
 //  
 Tags.define({tag:'detailJoin', extend:'detail', htmlTag:'div',
   update:function(model) {
-    if (this.key) model = model[this.key];
+    model = this.super(model);
     this.target.$el.text(model.join(','));
   }
 });
   
-//## type PhoneImage
-//
-// Display the image for a phone and if it is clicked, make
-// it the Main image.
-//  
-Tags.define({tag:'phoneImage', extend:'view', htmlTag:'li',
-  on: {
-    click:function(e) {
-      $("img",Tags.ns['router.phoneDetailView.mainImage'].$el).attr('src',this.imgSrc);
-    }
-  },
-  render:function() {
-    this.content = Tags.create({tag:'img', src:this.imgSrc},this);
-    return this.super();
-  }
-});
   

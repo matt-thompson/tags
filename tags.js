@@ -95,7 +95,7 @@ var Tags = {
         if (text.length > 4) text += ', ';
         text += 'content:';  
         var content = tag.content;
-        if ($.isArray(content)) {
+        if (jQuery.isArray(content)) {
           text += '[\n';
           indent += '  ';
           for (var n=0; n<content.length; n++) {
@@ -149,13 +149,13 @@ var Tags = {
       if (!(nextItem = item[parts[n]])) {
         item.id || (item.id = Tags.uniqueId());
         var nextItemId = parts.slice(0,n).join('.');
-        console.log('assignTo ADD-FIXUP path='+path+' val.id='+val.id);
+//        console.log('assignTo ADD-FIXUP path='+path+' val.id='+val.id);
         Tags.addFixup(nextItemId,{path:parts.slice(n),val:val});
         return;
       }
       item = nextItem;
     }
-    console.log('assignTo SETTING path='+path+' val.id='+val.id);
+//    console.log('assignTo SETTING path='+path+' val.id='+val.id);
     item[parts[n]] = val;
   },
 
@@ -214,8 +214,7 @@ var Tags = {
 //
 //<br/>
 //   
-  define: function(proto) {
-    var text = '';
+  define_HOLD: function(proto) {
     var superCls = Tags.protoMap[(proto.extend || 'root').toUpperCase()] || Tags.Root;
     var theConstructor = function() {};
     var superProto = new superCls();
@@ -225,6 +224,37 @@ var Tags = {
     return theConstructor;
   },
       
+  define: function(proto) {
+    var superCls = Tags.protoMap[(proto.extend || 'root').toUpperCase()] || Tags.Root;
+    var theConstructor = function() {};
+    var superProto = new superCls();
+    Tags.extendProto(superProto,proto);
+    theConstructor.prototype = superProto;
+    superProto.constructor = superCls;
+    Tags.protoMap[proto.tag.toUpperCase()] = theConstructor;
+    return theConstructor;
+  },
+      
+  define_EX: function(proto) {
+    var superCls = Tags.protoMap[(proto.extend || 'root').toUpperCase()] || Tags.Root;
+    var theConstructor = function() {};
+    var superProto = Object.create(superCls.prototype,proto);
+    theConstructor.prototype = superProto;
+    superProto.constructor = superCls;
+    Tags.protoMap[proto.tag.toUpperCase()] = theConstructor;
+    return theConstructor;
+  },
+      
+  extend: function(tagName,extension) {
+    var cls = Tags.protoMap[tagName.toUpperCase()];
+    if (!cls) {
+//      console.log("extend Class for tagName="+tagName+" NOT FOUND");
+      return;
+    }
+    if (cls.prototype) Tags.extendProto(cls.prototype,extension);
+//    console.log("extend tagName="+tagName+" PROTO="+Tags.show(cls.prototype,' ',true));
+  },
+  
 //### method Tags.isTag()
 //
 // arguments:
@@ -243,7 +273,7 @@ var Tags = {
     if (!val) return false;
     if (typeof val != 'object' || !val._isTag) return false;
     if (!tagName) return true;
-    if ($.isArray(tagName)) {
+    if (jQuery.isArray(tagName)) {
       for (var n=0; n<tagName.length; n++) if (tagName[n] == val.tag) return true;
       return false;
     }
@@ -284,9 +314,9 @@ var Tags = {
 
     if (!config) return config;
       if (typeof config == 'string') {
-        var trimmed = $.trim(config);
+        var trimmed = jQuery.trim(config);
         if (trimmed.length > 0 && trimmed.charAt(0) == '<') {
-          var xmlnode = $.parseXML(trimmed).documentElement;
+          var xmlnode = jQuery.parseXML(trimmed).documentElement;
           window.theXmlnode = xmlnode;
           log.debug("xmlnode.nodeType="+xmlnode.nodeType);
           tag = Tags.create(xmlnode,parent);
@@ -305,6 +335,7 @@ var Tags = {
         Cls = Tags.protoMap[clsName] || Tags.Root;
         if (!Cls) throw "No class found for tag="+attrs.tag;
         tag = new Cls();
+//        tag = Object.create(Cls.prototype);
         tag.initialize(attrs,parent);
         tag.tag = attrs.tag;
         tag._isTag = true;
@@ -331,7 +362,7 @@ var Tags = {
           }
         }
         return tag;
-      } else if ($.isArray(config)) {
+      } else if (jQuery.isArray(config)) {
         var tags = [];
         for (var n=0; n<config.length; n++) {
           tags.push(Tags.create(config[n],parent));
@@ -343,10 +374,11 @@ var Tags = {
         var clsName = config.tag.toUpperCase();
         Cls = Tags.protoMap[clsName] || Tags.Root;
         tag = new Cls();
+//        tag = Object.create(Cls.prototype);
         tag.initialize(config,parent);
         tag._isTag = true;
         if (config.content) {
-          if ($.isArray(config.content)) {
+          if (jQuery.isArray(config.content)) {
             tag.content = [];
             for (var n in config.content) {
               var child = Tags.create(config.content[n],tag);
@@ -415,7 +447,7 @@ Tags.extendProto(Root.prototype, {
         this.id = parent.id+this.id.substr(7);
       }
       Tags.ns[this.id] = this;
-      console.log('ID='+this.id+' calling Tags.assignTo ...');
+//      console.log('ID='+this.id+' calling Tags.assignTo ...');
       Tags.assignTo(Tags.ns,this.id,this);
     }
     if (this.expectedAttrs) {
@@ -557,7 +589,7 @@ var View = Tags.define({
     if (this.content) {
       if (typeof this.content == 'string') {
         this.$el.append(document.createTextNode(this.content));
-      } else if ($.isArray(this.content)) {
+      } else if (jQuery.isArray(this.content)) {
         for (var n=0; n<this.content.length; n++) {
           var child = this.content[n];
           if (Tags.isTag(child) && child.isView) {
@@ -588,8 +620,8 @@ var View = Tags.define({
   //
   addContent: function(contentToAdd) {
     this.content = this.content || [];
-    if (!$.isArray(this.content)) this.content = [this.content];
-    if ($.isArray(contentToAdd)) {
+    if (!jQuery.isArray(this.content)) this.content = [this.content];
+    if (jQuery.isArray(contentToAdd)) {
       for (var n=0; n<contentToAdd.length; n++) {
         this.content.push(Tags.create(contentToAdd[n],this));
       }
@@ -612,8 +644,8 @@ var View = Tags.define({
   //<br/>
   insertContent: function(index, contentToAdd) {
     this.content = this.content || [];
-    if (!$.isArray(this.content)) this.content = [this.content];
-    if ($.isArray(contentToAdd)) {
+    if (!jQuery.isArray(this.content)) this.content = [this.content];
+    if (jQuery.isArray(contentToAdd)) {
       for (var n=0; n<contentToAdd.length; n++) {
         this.content.splice(index,Tags.create(contentToAdd[n],this),0);
         index++;
@@ -632,7 +664,7 @@ var View = Tags.define({
   //
   refresh:function() {
     var content = this.content || [];
-    if (! $.isArray(content)) content = [content];
+    if (! jQuery.isArray(content)) content = [content];
     var base = null;
     for (var n=0; n<content.length; n++) {
       var item = content[n];
@@ -768,14 +800,14 @@ var View = Tags.define({
         (function(theKey) {
           var meth = self.on[theKey];
           self.$el.on(theKey,function(event) {
-            console.log("on."+theKey);
+//            console.log("on."+theKey);
             meth.call(self,event);
           });
         })(key);
       }
     }
     if (this.content) {
-      if ($.isArray(this.content)) {
+      if (jQuery.isArray(this.content)) {
         for (var n=0; n<this.content.length; n++) {
           var item = this.content[n];
           if (Tags.isTag(item) && item.isView) item.activate();
@@ -797,7 +829,7 @@ var View = Tags.define({
   //
   update:function() {
     if (this.content) {
-      if ($.isArray(this.content)) {
+      if (jQuery.isArray(this.content)) {
         log.debug("update ARRAY");
         for (var n=0; n<this.content.length; n++) {
           var item = this.content[n];
