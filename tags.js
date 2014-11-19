@@ -149,13 +149,11 @@ var Tags = {
       if (!(nextItem = item[parts[n]])) {
         item.id || (item.id = Tags.uniqueId());
         var nextItemId = parts.slice(0,n).join('.');
-//        console.log('assignTo ADD-FIXUP path='+path+' val.id='+val.id);
         Tags.addFixup(nextItemId,{path:parts.slice(n),val:val});
         return;
       }
       item = nextItem;
     }
-//    console.log('assignTo SETTING path='+path+' val.id='+val.id);
     item[parts[n]] = val;
   },
 
@@ -192,14 +190,14 @@ var Tags = {
     return Tags.refFrom(Tags.ns,path,this,name,callback);
   },
           
-//### method Tags.define()
-//
-//> Define a new type which extends another type and can be instantiated using Tags.create().
+//### method Tags.define(proto)
 //
 // arguments:
 //  
 //* proto a simple object whose attributes will be copied to the prototype
 //  of the type being defined.
+//
+// Define a new type which extends another type and can be instantiated using Tags.create().
 //
 // The proto parameter is copied into the prototype of the new type. A 'tag'
 // attribute is required and will be used to find the type definition by the Tags.create() method.
@@ -235,32 +233,20 @@ var Tags = {
     return theConstructor;
   },
       
-  define_EX: function(proto) {
-    var superCls = Tags.protoMap[(proto.extend || 'root').toUpperCase()] || Tags.Root;
-    var theConstructor = function() {};
-    var superProto = Object.create(superCls.prototype,proto);
-    theConstructor.prototype = superProto;
-    superProto.constructor = superCls;
-    Tags.protoMap[proto.tag.toUpperCase()] = theConstructor;
-    return theConstructor;
-  },
-      
   extend: function(tagName,extension) {
     var cls = Tags.protoMap[tagName.toUpperCase()];
     if (!cls) {
-//      console.log("extend Class for tagName="+tagName+" NOT FOUND");
       return;
     }
     if (cls.prototype) Tags.extendProto(cls.prototype,extension);
-//    console.log("extend tagName="+tagName+" PROTO="+Tags.show(cls.prototype,' ',true));
   },
   
-//### method Tags.isTag()
+//### method Tags.isTag(val [,tagName])
 //
 // arguments:
 //  
-//* val the value for which the determination is to be made
-//* tagName an optional comma seaparated list of tag names
+//* val - the value for which the determination is to be made
+//* tagName - an optional comma seaparated list of tag names
 // 
 //Convenience function for determining if a value is a Tag, possibly of a specified type.
 // 
@@ -280,11 +266,12 @@ var Tags = {
     return val.tag == tagName;
   },
 
-//### method Tags.create()
+//### method Tags.create(config [,parent])
 //
 // arguments:
-//* config the object that specifies the object to be created
-//* parent an optional reference to the object to contain the created object
+//
+//* config - the object that specifies the object to be created
+//* parent - an optional reference to the object to contain the created object
 //
 //Create a new instance of a Tag type
 //
@@ -318,7 +305,6 @@ var Tags = {
         if (trimmed.length > 0 && trimmed.charAt(0) == '<') {
           var xmlnode = jQuery.parseXML(trimmed).documentElement;
           window.theXmlnode = xmlnode;
-          log.debug("xmlnode.nodeType="+xmlnode.nodeType);
           tag = Tags.create(xmlnode,parent);
           return tag;
         } else {
@@ -335,7 +321,6 @@ var Tags = {
         Cls = Tags.protoMap[clsName] || Tags.Root;
         if (!Cls) throw "No class found for tag="+attrs.tag;
         tag = new Cls();
-//        tag = Object.create(Cls.prototype);
         tag.initialize(attrs,parent);
         tag.tag = attrs.tag;
         tag._isTag = true;
@@ -374,7 +359,6 @@ var Tags = {
         var clsName = config.tag.toUpperCase();
         Cls = Tags.protoMap[clsName] || Tags.Root;
         tag = new Cls();
-//        tag = Object.create(Cls.prototype);
         tag.initialize(config,parent);
         tag._isTag = true;
         if (config.content) {
@@ -391,7 +375,6 @@ var Tags = {
         }
         return tag;
       }
-      console.log("Tags.create ERROR="+err);
       Tags.errors.push(err);
       return null;
   } // Tags.create()
@@ -411,7 +394,7 @@ Tags.extendProto(Root.prototype, {
 
   tag:'root',
   
-//### method root.initialize()
+//### method root.initialize(config [,parent])
 //
 //arguments:
 //
@@ -447,7 +430,6 @@ Tags.extendProto(Root.prototype, {
         this.id = parent.id+this.id.substr(7);
       }
       Tags.ns[this.id] = this;
-//      console.log('ID='+this.id+' calling Tags.assignTo ...');
       Tags.assignTo(Tags.ns,this.id,this);
     }
     if (this.expectedAttrs) {
@@ -470,7 +452,11 @@ Tags.extendProto(Root.prototype, {
     return this.id;
   },  
   
-  //### method root.dot()
+  //### method root.dot(label)
+  //
+  // arguments:
+  //
+  //  * label - the final part of the name of the returned id
   //
   //Convenience method to define an id relative to a tag.
   //
@@ -546,7 +532,7 @@ var View = Tags.define({
   isView: true,
   defaultOptions: {tag:true,content:true},
   
-//### method view.initialize()
+//### method view.initialize(config [,parent])
 //
 // see root.initialize()
   initialize: function(config,parent) {
@@ -565,7 +551,11 @@ var View = Tags.define({
     }
   },
   
-//### method $()
+//### method $(selector)
+//
+// arguments:
+//
+// * selector - CSS selector
 //
 //Convenient short-cut for this.$el.find(selector).
 //
@@ -577,7 +567,7 @@ var View = Tags.define({
 //
 // Render an HTML DOM representation of the tag and return it as a jQuery object
 //
-// This method recursively renders nested content. Invoke it as this.prototype._super()
+// This method recursively renders nested content. Invoke it as this.super()
 // from the overriding method to painlessly render nested content.
 //
   render: function() {
@@ -608,11 +598,11 @@ var View = Tags.define({
     return this.$el;
   },
   
-  //### method addContent()
+  //### method addContent(content)
   //
   //arguments:
   //
-  //* contentToAdd - this is the content to add
+  //* content - this is the content to add
   //
   //A single value, object or array is expected. The item (or each item in the
   //array) is passed to Tags.create() and the result is added to the content of
@@ -631,12 +621,12 @@ var View = Tags.define({
     Tags.resolveFixups();
   },
 
-  //### method view.insertContent()  
+  //### method view.insertContent(index,content)  
   //
   //arguments:
   //
   //* index - the index of where in the content, the new content is to be inserted
-  //* contentToAdd - this is the content to add
+  //* contentT - this is the content to add
   //
   //This works like addContent() except that an offset into the content[] array can
   //be specified.
@@ -682,11 +672,11 @@ var View = Tags.define({
     }
   },
   
-  //### method view.hasClass()
+  //### method view.hasClass(className)
   //
   //arguments:
   //
-  //* theClass - the class to check for
+  //* className - the class to check for
   //
   //Determine if the specified class string is in the objects 'class' attribute.
   //
@@ -697,11 +687,11 @@ var View = Tags.define({
     return false;
   },
       
-//### method view.addClass()
+//### method view.addClass(className)
 //
 //arguments:
 //
-//* theClass - the class to add to the object's 'class' attribute
+//* className - the class to add to the object's 'class' attribute
 //
   addClass: function() {
     var n;
@@ -724,11 +714,11 @@ var View = Tags.define({
     if (this.$el) this.$el.attr('class',classText);
   },
    
-//### method view.removeClass()
+//### method view.removeClass(className)
 //
 //arguments:
 //
-//* theClass - the class to remove
+//* className - the class to remove
 //
 //Remove the class from the object's 'class' attribute.
 //
@@ -765,7 +755,6 @@ var View = Tags.define({
   
   checkEl: function() {
     if (!this.$el && (this.el || this.id)) {
-      log.debug("checkEl FIXING tag="+this.tag+" el="+(this.el || this.id));
       this.$el = $(this.el || "#"+this.id);
     }
   },
@@ -777,7 +766,7 @@ var View = Tags.define({
 //An overridden activate() method is a good place to define and attach event handlers. This
 //View object provides a convenient place to save information used by handlers.
 //
-//Invoke this function of the View class using this._super() in order to make sure
+//Invoke this function of the View class using this.super() in order to make sure
 //that activate() is called on nested content.
 //
 //A side effect of this function is to make sure that this.$el is set. It will normally
@@ -800,7 +789,6 @@ var View = Tags.define({
         (function(theKey) {
           var meth = self.on[theKey];
           self.$el.on(theKey,function(event) {
-//            console.log("on."+theKey);
             meth.call(self,event);
           });
         })(key);
@@ -830,17 +818,13 @@ var View = Tags.define({
   update:function() {
     if (this.content) {
       if (jQuery.isArray(this.content)) {
-        log.debug("update ARRAY");
         for (var n=0; n<this.content.length; n++) {
           var item = this.content[n];
           if (Tags.isTag(item) && item.isView) {
-            log.debug("calling item.update tag="+item.tag);
-//            item.update(model);
             item.update.apply(item,arguments);
           }
         }
       } else if (Tags.isTag(this.content)) {
-        log.debug("update ONE");
         this.content.update.apply(this.content,arguments);
       }
     }
@@ -884,9 +868,6 @@ for (var n=0; n<htmlTags.length; n++) {
 //Apply any custom-tags found in script tags with type='text/tags'  
 
 $(document).ready(function() {
-  log.debug("READY");
-  log.debug("TAGS ready script.len="+$("script").length);
-  log.debug("TAGS ready LEN="+$("script[type^='text/tags']").length);
   var scriptList = [];
   //Go through script tags and instantiate all of the custom tags
   $("script[type='text/tags']").each(function() {

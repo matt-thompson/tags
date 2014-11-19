@@ -27,6 +27,8 @@
     
    <li>Alternatively, allows View objects to be represented in Javascript for convenient handling of dynamic HTML.</li>
   
+   <li>Provides a powerful and extensible base for component libraries</li>
+   
    <li>Provides a namespace for referencing objects by their 'id' attribute and
        provides the ability to reference objects from other objects
        without having to use jQuery selectors or complex hierarchy traversals.</li>
@@ -65,7 +67,7 @@ and propogated to the contained control components. It shows how the contained c
 from the Model based on the 'name' attribute of the control component.</p>
 
        
-<p>See the [Annotated Source](showsource.html?source=tags.js) for the Tags Framework API.</p>
+<p>See the <a href='showsource.html?source=tags.js'>Annotated Source</a> for the Tags Framework API.</p>
 
 <h3>Inheritance Chains</h3>
 
@@ -132,6 +134,13 @@ type will be extended.</p>
    input with implied handling to represent static HTML and use Javascript structures with
    explicit handling to represent dynamic HTML.</p>
 
+<h3>Base for Component Libraries</h3>
+
+<p>A component library built on the Tags Framework can be integrated into an application
+   by treating each component as if it were standard HTML. A component can seamlessly
+   interconnect with standard HTML and components of other libraries either statically
+   or dynamically.</p>
+   
 <h3>Object Namespace</h3>
 
 <p>A Tag object that is given an 'id' attribute can be referenced from the Tags.ns namespace
