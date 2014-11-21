@@ -1,5 +1,10 @@
 //## form-to-table/app.js
 //
+// See <a href='showsource.html?source=examples/form-to-table/app.js'>HTML source</a>.
+//
+// See <a href='showsource.html?source=examples/form-to-table/app.css'>CSS source</a>.
+//
+//
 // This shows how to use the Tags framework to solve a simple task - use input 
 // from a form to populate a table.
 //

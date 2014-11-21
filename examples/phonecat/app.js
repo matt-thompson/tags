@@ -1,5 +1,9 @@
 //# phonecat/app.js
 //
+// See <a href='showsource.html?source=examples/phonecat/index.html'>HTML source</a>.
+//
+// See <a href='showsource.html?source=examples/phonecat/app.css'>App CSS source</a>.
+// 
 // Implement custom tags for the Phonecat app.
 //
 //## type View (extension)

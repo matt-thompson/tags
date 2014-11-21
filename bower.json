@@ -1,8 +1,21 @@
 {
   "name": "tags",
-  "version": "0.9.7",
-  "main": "tags.js",
+  "version": "0.9.8",
+  "main": "dist/tags.js",
+  "ignore": [
+    "bower_components",
+    "css",
+    "examples",
+    "js",
+    "bower.json",
+    "introduction.html",
+    "README.md",
+    "showsource.html",
+    "tags.js",
+    "bin",
+    "src"
+  ],
   "dependencies": {
-    "jquery": "~1.9.1"
+    "jquery": "~2.0.0"
   }
 }

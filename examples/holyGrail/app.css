@@ -1,4 +1,11 @@
 /* CSS for the Holy Grail example
+//
+// See <a href='showsource.html?source=examples/holyGrail/index.html'>HTML source</a>.
+// 
+// See <a href='showsource.html?source=examples/holyGrail/layout.js'>Layout Javascript source</a>.
+//
+// See <a href='showsource.html?source=examples/holyGrail/layout.css'>Layout CSS source</a>.
+//
 */
 html {margin:0; width:100%; height:100%;}
 body {margin:0; width:100%; height:100%; overflow:hidden; background-color: #eee;}

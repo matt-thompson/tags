@@ -2,6 +2,10 @@
 
 //# todoMvc.js
 //
+// See <a href='showsource.html?source=examples/todoMvc/index.html'>HTML source</a>.
+//
+// See <a href='showsource.html?source=examples/todoMvc/app.css'>CSS source</a>.
+//
 // The app is implemented as a set of custom-tag definitions.
 // Each call to Tags.define() creates and registers a Tags Type.
 // A Type is a prototype that can be used to instatiate new
@@ -13,6 +17,10 @@
 var ENTER_KEY = 13;
 
 //## Todo Type
+//
+//See <a href='showsource.html?source=examples/todoMvc/app.js'>HTML source</a>.
+//
+//See <a href='showsource.html?source=examples/todoMvc/app.css'>CSS source</a>.
 //
 // The Todo type is used to instantiate a Todo record. It will
 // be invoked manually each time a new Todo entry is needed.
