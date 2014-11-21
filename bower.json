@@ -1,6 +1,6 @@
 {
   "name": "tags",
-  "version": "0.9.8",
+  "version": "0.9.10",
   "main": "dist/tags.js",
   "ignore": [
     "bower_components",
@@ -11,7 +11,6 @@
     "introduction.html",
     "README.md",
     "showsource.html",
-    "tags.js",
     "bin",
     "src"
   ],

@@ -1,4 +1,4 @@
-// tags.js 0.9.9
+// tags.js 0.9.10
 
 var log = log || {debug:function() {}};
 
